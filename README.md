@@ -112,6 +112,13 @@ URL Backend: localhost/blog_konecta/
     "action":"eliminarUsuario",
     "id":""
 
+5) Loguear usuarios: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"login",
+    "correo":"",
+    "contrasena":""
+
 /*--------------------- CATEGORÍAS -------------------------*/
 1) Listado de categorías: 
   URL: localhost/blog_konecta/

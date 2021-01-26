@@ -350,7 +350,7 @@ class Categoria {
      * Funcion para obtener categorías por nombre
      * @by: snevadov
      * @date: 2021/01/25
-     * @return: Boolean
+     * @return: array
      */
     public function getCategoriasByNombre($sNombre = null){
         
@@ -406,7 +406,7 @@ class Categoria {
      * Funcion para obtener blogs asociados por categoria
      * @by: snevadov
      * @date: 2021/01/25
-     * @return: Boolean
+     * @return: array
      */
     public function getBlogsByIdCategoria($iId = null){
         

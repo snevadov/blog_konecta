@@ -474,6 +474,42 @@ if(isset($_REQUEST["action"])){
             
 
             break;
+        
+        //Login de usuarios
+        case 'login':
+            //Creo la variable usuario
+            $oUsuario = new Usuario();
+
+            //Valido existencia de datos
+            $sCorreo = isset($_POST['correo']) ? $_POST['correo'] : null;
+            $sContrasena = isset($_POST['contrasena']) ? md5($_POST['contrasena']) : null;
+
+            //Seteo los datos en el modelo
+            $oUsuario->setCorreo($sCorreo);
+            $oUsuario->setContrasena($sContrasena);
+            
+
+            //Guardo y manejo los mensajes
+            if(!$oUsuario->loguearUsuario()){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = $oUsuario->getMensaje();
+
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oUsuario->getMensaje();
+
+             //Devuelvo la respuesta
+             echo json_encode($oRespuesta);
+             header("HTTP/1.1 200 OK");
+             exit();
+            
+
+            break;
 
         default:
             //Creo la variable usuario

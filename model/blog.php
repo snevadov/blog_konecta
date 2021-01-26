@@ -546,6 +546,8 @@ class Blog {
 
             $this->sMensaje .= ' Categoría '.$iIdCategoriaEliminar.' desasociada al blog satisfactoriamente.';
         }
+
+        return true;
     }
 
     /**
@@ -578,7 +580,7 @@ class Blog {
      * Funcion para eliminar categorias de un blog de la base de datos
      * @by: snevadov
      * @date: 2021/01/25
-     * @return: array
+     * @return: Boolean
      */
     public function deleteCategoriasxBlog($iId = null){
         

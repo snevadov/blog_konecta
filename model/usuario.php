@@ -495,7 +495,7 @@ class Usuario {
      * Funcion para obtener usuarios por identificacion
      * @by: snevadov
      * @date: 2021/01/25
-     * @return: Boolean
+     * @return: array
      */
     public function getUsuariosByIdentificacion($sIdentificacion = null){
         
@@ -528,6 +528,49 @@ class Usuario {
 
         return $aUsuarios;
     }
+
+    /**
+     * Funcion para realizar el logueo de usuarios por correo y contraseña
+     * @by: snevadov
+     * @date: 2021/01/25
+     * @return: Boolean
+     */
+    public function loguearUsuario($sCorreo = null, $sContrasena = null){
+
+        //Variables por defecto
+        $sCorreo = isset($sCorreo) ? $sCorreo :  $this->sCorreo;
+        $sContrasena = isset($sContrasena) ? $sContrasena : $this->sContrasena;
+        
+        //Cargo de base de datos
+        $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE correo=:correo AND contrasena=:contrasena');
+        $stmt->execute(
+            array(
+                ':correo' => $sCorreo,
+                ':contrasena' => $sContrasena
+            )
+        );
+
+        //Ejecuto la consulta
+        $oIdUsuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(isset($oIdUsuario['id'])){
+            $this->iId = $oIdUsuario['id'];
+            
+            if($this->load()){
+                $this->sMensaje = 'Login satisfactorio';
+                return true;
+            }
+            else{
+                return false;
+            }
+
+        } else{
+            $this->sMensaje = 'Combinación de usuario y contraseña incorrecta.';
+            return false;
+        }
+
+        return $aUsuarios;
+    }    
 
 }
 
