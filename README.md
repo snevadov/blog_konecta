@@ -41,10 +41,34 @@ INSERT INTO usuario (nombre, correo, contrasena, numeromovil, idtipousuario, fec
 CREATE TABLE categoria (
   id INTEGER NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(128) NOT NULL UNIQUE,
-  descripcion VARCHAR(128),
+  descripcion TEXT,
   fechacreacion datetime,
   fechaactualizacion datetime,
   PRIMARY KEY(id)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE blog (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  titulo VARCHAR(128) NOT NULL,
+  slug VARCHAR(128) NOT NULL,
+  textocorto VARCHAR(256) NOT NULL,
+  textolargo TEXT NOT NULL,
+  rutaimagen TEXT,
+  fechacreacion datetime,
+  fechaactualizacion datetime,
+  PRIMARY KEY(id)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE categoriaxblog (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  idcategoria INTEGER NOT NULL,
+  idblog INTEGER NOT NULL,
+  CONSTRAINT FOREIGN KEY (idcategoria) REFERENCES `categoria` (id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FOREIGN KEY (idblog) REFERENCES `blog` (id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY(id),
+  UNIQUE KEY `idcategoria_x_idblog` (`idcategoria`,`idblog`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 /*----------------------------------------------------------------------------------------------------*/

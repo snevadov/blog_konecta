@@ -8,6 +8,9 @@ require_once "model/usuario.php";
 //Incluyo la clase Categoría
 require_once "model/categoria.php";
 
+//Incluyo la clase Blog
+require_once "model/blog.php";
+
 //Variable de respuesta
 $oRespuesta = new stdClass();
 $oRespuesta->exito = false;
@@ -313,6 +316,159 @@ if(isset($_REQUEST["action"])){
              exit();
             
  
+            break;
+
+        //Listado de blogs
+        case 'listarBlogs':
+            //Creo la variable blog
+            $oBlog = new Blog();
+
+            //Asigno los coches a una variable que estará esperando la vista
+            $aBlogs = $oBlog->getAll();
+
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oBlog->getMensaje();
+            $oRespuesta->blogs = $aBlogs;
+
+            //Devuelvo la respuesta
+            echo json_encode($oRespuesta);
+            header("HTTP/1.1 200 OK");
+            exit();
+
+            break;
+        
+        //Crear blog
+        case 'crearBlog':
+            //Creo la variable usuario
+            $oBlog = new Blog();
+
+            //Valido existencia de datos
+            $sTitulo = isset($_POST['titulo']) ? $_POST['titulo'] : null;
+            $sSlug = isset($_POST['slug']) ? $_POST['slug'] : null;
+            $sTextoCorto = isset($_POST['textocorto']) ? $_POST['textocorto'] : null;
+            $sTextoLargo = isset($_POST['textolargo']) ? $_POST['textolargo'] : null;
+            $sRutaImagen = isset($_POST['rutaimagen']) ? $_POST['rutaimagen'] : null;
+            $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
+
+            //Seteo los datos en el modelo
+            $oBlog->setTitulo($sTitulo);
+            $oBlog->setSlug($sSlug);
+            $oBlog->setTextoCorto($sTextoCorto);
+            $oBlog->setTextoLargo($sTextoLargo);
+            $oBlog->setRutaImagen($sRutaImagen);
+            $oBlog->setFechaCreacion($dFechaCreacion);
+            
+
+            //Guardo y manejo los mensajes
+            if(!$oBlog->save()){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = $oBlog->getMensaje();
+
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oBlog->getMensaje();
+
+             //Devuelvo la respuesta
+             echo json_encode($oRespuesta);
+             header("HTTP/1.1 200 OK");
+             exit();
+            
+
+            break;
+        
+        //Editar blog
+        case 'editarBlog':
+            //Creo la variable usuario
+            $oBlog = new Blog();
+
+            //Valido existencia de datos
+            $iId = isset($_POST['id']) ? $_POST['id'] : null;
+            $sTitulo = isset($_POST['titulo']) ? $_POST['titulo'] : null;
+            $sSlug = isset($_POST['slug']) ? $_POST['slug'] : null;
+            $sTextoCorto = isset($_POST['textocorto']) ? $_POST['textocorto'] : null;
+            $sTextoLargo = isset($_POST['textolargo']) ? $_POST['textolargo'] : null;
+            $sRutaImagen = isset($_POST['rutaimagen']) ? $_POST['rutaimagen'] : null;
+            $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
+
+            //Seteo los datos en el modelo
+            $oBlog->setId($iId);
+            $oBlog->setTitulo($sTitulo);
+            $oBlog->setSlug($sSlug);
+            $oBlog->setTextoCorto($sTextoCorto);
+            $oBlog->setTextoLargo($sTextoLargo);
+            $oBlog->setRutaImagen($sRutaImagen);
+            $oBlog->setFechaCreacion($dFechaCreacion);
+
+            //Valido que se envíe el ID para realizar una edición
+            if(!isset($iId)){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = "No se envió el identificador de blog";
+ 
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+            
+
+            //Guardo y manejo los mensajes
+            if(!$oBlog->save()){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = $oBlog->getMensaje();
+
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oBlog->getMensaje();
+
+             //Devuelvo la respuesta
+             echo json_encode($oRespuesta);
+             header("HTTP/1.1 200 OK");
+             exit();
+            
+
+            break;
+
+        //Eliminar blog
+        case 'eliminarBlog':
+            //Creo la variable usuario
+            $oBlog = new Blog();
+
+            //Valido existencia de datos
+            $iId = isset($_POST['id']) ? $_POST['id'] : null;
+
+            //Seteo los datos en el modelo
+            $oBlog->setId($iId);            
+
+            //Guardo y manejo los mensajes
+            if(!$oBlog->delete()){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = $oBlog->getMensaje();
+
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oBlog->getMensaje();
+
+             //Devuelvo la respuesta
+             echo json_encode($oRespuesta);
+             header("HTTP/1.1 200 OK");
+             exit();
+            
+
             break;
 
         default:
