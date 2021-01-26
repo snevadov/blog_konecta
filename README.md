@@ -1,6 +1,6 @@
 Prueba Técnica para Desarrollador Konecta.
 
-/* Script sistema base*/
+/*------------------------------------- Script sistema base --------------------------------------*/
 CREATE DATABASE blog_konecta;
 
 USE blog_konecta;
@@ -36,3 +36,43 @@ CREATE TABLE usuario (
 
 INSERT INTO usuario (nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion) 
   VALUES ('Administrador', 'administrador@blogkonecta.com', MD5('abc123'), '3007483357',1, NOW());
+
+/*------------------------------------- FIN Script sistema base --------------------------------------*/
+
+/*------------------------------------- Documentación --------------------------------------*/
+Listado de URLs RestAPI.
+
+URL Backend: localhost/blog_konecta/
+
+1) Listado de usuarios: 
+  URL: localhost/blog_konecta/
+  Parámetros: "action":"listarUsuarios"
+
+2) Crear usuarios: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"crearUsuario",
+    "nombre":"",
+    "identificacion":"",
+    "correo":"",
+    "contrasena":"",
+    "numeromovil":"",
+    "idtipousuario":""
+
+3) Editar usuarios: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"editarUsuario",
+    "id":"",
+    "nombre":"",
+    "identificacion":"",
+    "correo":"",
+    "contrasena":"",
+    "numeromovil":"",
+    "idtipousuario":""
+
+4) Eliminar usuarios: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"eliminarUsuario",
+    "id":""

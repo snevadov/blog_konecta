@@ -501,12 +501,12 @@ class Usuario {
         
         //Cargo de base de datos
         $sIdentificacion = isset($sIdentificacion) ? $sIdentificacion :  $this->sIdentificacion;
-        $stmt = $this->dbConection->prepare('SELECT 
-        identificacion, nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion, fechaactualizacion FROM usuario
-        WHERE identificacion=:identificacion');
+        $iId = isset($this->iId) ? $this->iId :  null;
+        $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE identificacion=:identificacion AND id<>:id');
         $stmt->execute(
             array(
-                ':identificacion' => $sIdentificacion
+                ':identificacion' => $sIdentificacion,
+                ':id' => $iId
             )
         );
         $aUsuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -3,7 +3,10 @@
 header('Access-Control-Allow-Origin: *');
 
 //Incluyo la clase Usuario
-require_once "model/Usuario.php";
+require_once "model/usuario.php";
+
+//Incluyo la clase Categoría
+require_once "model/categoria.php";
 
 //Variable de respuesta
 $oRespuesta = new stdClass();
