@@ -348,6 +348,7 @@ if(isset($_REQUEST["action"])){
             $sTextoCorto = isset($_POST['textocorto']) ? $_POST['textocorto'] : null;
             $sTextoLargo = isset($_POST['textolargo']) ? $_POST['textolargo'] : null;
             $sRutaImagen = isset($_POST['rutaimagen']) ? $_POST['rutaimagen'] : null;
+            $aIdsCategorias = isset($_POST['idcategorias']) ? $_POST['idcategorias'] : array();
             $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
 
             //Seteo los datos en el modelo
@@ -356,6 +357,7 @@ if(isset($_REQUEST["action"])){
             $oBlog->setTextoCorto($sTextoCorto);
             $oBlog->setTextoLargo($sTextoLargo);
             $oBlog->setRutaImagen($sRutaImagen);
+            $oBlog->setIdsCategorias($aIdsCategorias);
             $oBlog->setFechaCreacion($dFechaCreacion);
             
 
@@ -393,6 +395,7 @@ if(isset($_REQUEST["action"])){
             $sTextoCorto = isset($_POST['textocorto']) ? $_POST['textocorto'] : null;
             $sTextoLargo = isset($_POST['textolargo']) ? $_POST['textolargo'] : null;
             $sRutaImagen = isset($_POST['rutaimagen']) ? $_POST['rutaimagen'] : null;
+            $aIdsCategorias = isset($_POST['idcategorias']) ? $_POST['idcategorias'] : array();
             $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
 
             //Seteo los datos en el modelo
@@ -403,6 +406,7 @@ if(isset($_REQUEST["action"])){
             $oBlog->setTextoLargo($sTextoLargo);
             $oBlog->setRutaImagen($sRutaImagen);
             $oBlog->setFechaCreacion($dFechaCreacion);
+            $oBlog->setIdsCategorias($aIdsCategorias);
 
             //Valido que se envíe el ID para realizar una edición
             if(!isset($iId)){
@@ -479,7 +483,7 @@ if(isset($_REQUEST["action"])){
             $aUsuarios = $oUsuario->getAll();
 
             $oRespuesta->exito = true;
-            $oRespuesta->mensaje = $oUsuario->getMensaje();
+            $oRespuesta->mensaje = "Default ".$oUsuario->getMensaje();
             $oRespuesta->usuarios = $aUsuarios;
 
             //Devuelvo el listado de usuarios
@@ -497,7 +501,7 @@ if(isset($_REQUEST["action"])){
     $aUsuarios = $oUsuario->getAll();
 
     $oRespuesta->exito = true;
-    $oRespuesta->mensaje = $oUsuario->getMensaje();
+    $oRespuesta->mensaje = 'Else '.$oUsuario->getMensaje();
     $oRespuesta->usuarios = $aUsuarios;
 
     //Devuelvo el listado de usuarios

@@ -292,7 +292,6 @@ class Blog {
      * @by: snevadov
      * @date: 2021/01/25
      * @return: Boolean
-     * @ToDo: Falta IdCategorias
      */
     public function verificarIntegridad(){
 
@@ -316,10 +315,10 @@ class Blog {
             return false;
         }
 
-        // if(count($this->aIdsCategorias)<1){
-        //     $this->sMensaje = 'El blog debe tener al menos una categoría';
-        //     return false;
-        // }
+        if(count($this->aIdsCategorias)<1){
+            $this->sMensaje = 'El blog debe tener al menos una categoría';
+            return false;
+        }
         
         return true;
         
@@ -330,7 +329,6 @@ class Blog {
      * @by: snevadov
      * @date: 2021/01/25
      * @return: Boolean
-     * @ToDo: Falta IdCategorias
      */
     public function save(){
         
@@ -358,7 +356,10 @@ class Blog {
                 )
             );
 
-            $this->sMensaje = 'Blog actualizado satisfactoriamente';
+            $this->sMensaje = 'Blog actualizado satisfactoriamente.';
+
+            //Actualizo las categorías
+            $this->saveBlogXCategoria();
 
             return true;
         } else {
@@ -379,7 +380,10 @@ class Blog {
 
             $this->iId = $this->dbConection->lastInsertId();
 
-            $this->sMensaje = 'Blog insertado satisfactoriamente';
+            $this->sMensaje = 'Blog insertado satisfactoriamente.';
+
+            //Actualizo las categorías
+            $this->saveBlogXCategoria();
 
             return true;
         }
@@ -390,7 +394,6 @@ class Blog {
      * @by: snevadov
      * @date: 2021/01/25
      * @return: Boolean
-     * @ToDo: Falta IdCategorias
      */
     public function load(){
 
@@ -398,7 +401,7 @@ class Blog {
         if(isset($this->iId)){
             //Cargo de base de datos
             $stmt = $this->dbConection->prepare('SELECT 
-            titulo, slug, textocorto, textolargo, fechacreacion, rutaimagen, fechaactualizacion FROM blog
+            titulo, slug, textocorto, textolargo, rutaimagen, fechacreacion, fechaactualizacion FROM blog
             WHERE id=:id');
             $stmt->execute(
                 array(
@@ -415,6 +418,7 @@ class Blog {
             $this->sRutaImagen = htmlentities($row['rutaimagen']);
             $this->dFechaCreacion = htmlentities($row['fechacreacion']);
             $this->dFechaActualizacion = htmlentities($row['fechaactualizacion']);
+            $this->aIdsCategorias = $this->getIdsCategorias();
 
 
             $this->sMensaje = 'Blog cargado satisfactoriamente';
@@ -433,13 +437,17 @@ class Blog {
      * @by: snevadov
      * @date: 2021/01/25
      * @return: array
-     * @ToDo: Falta IdCategorias
      */
     public function getAll(){
+
         //Cargo de base de datos
-        $stmt = $this->dbConection->query('SELECT id, titulo, slug, textocorto, textolargo, rutaimagen,
-             fechacreacion, fechaactualizacion 
-        FROM blog');
+        $stmt = $this->dbConection->query('SELECT b.id, MAX(b.titulo) AS titulo, MAX(b.slug) AS slug, 
+            MAX(b.textocorto) AS textocorto, MAX(b.textolargo) AS textolargo, MAX(b.rutaimagen) AS rutaimagen, GROUP_CONCAT(c.nombre) AS categorias,
+            MAX(b.fechacreacion) as fechacreacion, MAX(b.fechaactualizacion) AS fechaactualizacion
+        FROM blog AS b
+        LEFT JOIN categoriaxblog AS cxb ON (b.id = cxb.idblog)
+        LEFT JOIN categoria AS c ON (c.id = cxb.idcategoria)
+        GROUP BY b.id');
         $aBlogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $this->sMensaje = 'Todos los blogs cargados satisfactoriamente';
@@ -452,21 +460,27 @@ class Blog {
      * @by: snevadov
      * @date: 2021/01/25
      * @return: Boolean
-     * @ToDo: Falta IdCategorias
      */
     public function delete(){
         
         //Valido que tenga id seteado
         if(isset($this->iId)){
 
-            //Elimino en base de datos
-            $sql = "DELETE FROM blog WHERE id = :id";
-            $stmt = $this->dbConection->prepare($sql);
-            $stmt->execute(array(':id' => $_POST['id']));
+            //Elimino primero las categorías
+            if($this->deleteCategoriasxBlog()){
+                //Elimino en base de datos
+                $sql = "DELETE FROM blog WHERE id = :id";
+                $stmt = $this->dbConection->prepare($sql);
+                $stmt->execute(array(':id' => $_POST['id']));
 
-            $this->sMensaje = 'Blog eliminado satisfactoriamente';
+                $this->sMensaje = 'Blog eliminado satisfactoriamente';
 
-            return true;
+                return true;
+            } else {
+                $this->sMensaje = 'Error eliminando cateogrías de un Blog';
+
+                return false;
+            }
 
         } else {
 
@@ -474,6 +488,113 @@ class Blog {
 
             return false;
         }
+    }
+
+    /**
+     * Funcion para guardar blogxcategoria en la base de datos
+     * @by: snevadov
+     * @date: 2021/01/25
+     * @return: Boolean
+     */
+    public function saveBlogXCategoria(){
+        
+        //Defino variables para agregar nuevas categorías y eliminar las que se quitaron
+        $aIdsCategoriaEliminar = array();
+        $aIdsCategoriaNuevas = array();
+        $aIdsCategoriaAnteriores = $this->getCategoriasxBlog();
+
+        //Busco las categorías nuevas
+        foreach ($this->aIdsCategorias as $indice => $iIdCategoria) {
+
+            if(!in_array($iIdCategoria, $aIdsCategoriaAnteriores)){
+                $aIdsCategoriaNuevas[] = $iIdCategoria;
+            }
+        }
+
+        //Busco las categorías eliminadas
+        foreach ($aIdsCategoriaAnteriores as $indice => $iIdCategoriaAnterior) {
+
+            if(!in_array($iIdCategoriaAnterior, $this->aIdsCategorias)){
+                $aIdsCategoriaEliminar[] = $iIdCategoriaAnterior;
+            }
+        }
+
+        //Inserto en base de datos las categorías nuevas
+        foreach ($aIdsCategoriaNuevas as $iIdCategoriaNueva) {
+            $stmt = $this->dbConection->prepare('INSERT INTO categoriaxblog
+            (idblog, idcategoria) 
+            VALUES (:idblog, :idcategoria)');
+            $stmt->execute(
+                array(
+                    ':idblog' => $this->iId,
+                    ':idcategoria' => $iIdCategoriaNueva
+                )
+            );
+
+            $this->sMensaje .= ' Categoría '.$iIdCategoriaNueva.' asociada al blog satisfactoriamente.';
+        }
+
+        //Elimino en base de datos las categorías borradas
+        foreach ($aIdsCategoriaEliminar as $iIdCategoriaEliminar) {
+            $stmt = $this->dbConection->prepare('DELETE FROM categoriaxblog WHERE idblog=:idblog AND idcategoria=:idcategoria');
+            $stmt->execute(
+                array(
+                    ':idblog' => $this->iId,
+                    ':idcategoria' => $iIdCategoriaEliminar
+                )
+            );
+
+            $this->sMensaje .= ' Categoría '.$iIdCategoriaEliminar.' desasociada al blog satisfactoriamente.';
+        }
+    }
+
+    /**
+     * Funcion para cargar listado de categorias de un blog de la base de datos
+     * @by: snevadov
+     * @date: 2021/01/25
+     * @return: array
+     */
+    public function getCategoriasxBlog($iId = null){
+        
+        //Cargo de base de datos
+        $iId = isset($iId) ? $iId :  $this->iId;
+        
+        $stmt = $this->dbConection->prepare('SELECT idcategoria FROM categoriaxblog WHERE idblog=:id');
+        $stmt->execute(
+            array(
+                ':id' => $iId
+            )
+        );
+        
+        //Ejecuto la consulta
+        $aIdsCategorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        $this->sMensaje .= 'Todas las categorías por Blog cargadas satisfactoriamente';
+
+        return $aIdsCategorias;
+    }
+
+    /**
+     * Funcion para eliminar categorias de un blog de la base de datos
+     * @by: snevadov
+     * @date: 2021/01/25
+     * @return: array
+     */
+    public function deleteCategoriasxBlog($iId = null){
+        
+        //Cargo de base de datos
+        $iId = isset($iId) ? $iId :  $this->iId;
+        
+        $stmt = $this->dbConection->prepare('DELETE FROM categoriaxblog WHERE idblog=:id');
+        $stmt->execute(
+            array(
+                ':id' => $iId
+            )
+        );
+
+        $this->sMensaje .= 'Todas las categorías por Blog eliminadas satisfactoriamente';
+
+        return true;
     }
 }
 

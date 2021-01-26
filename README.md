@@ -138,4 +138,38 @@ URL Backend: localhost/blog_konecta/
     "action":"eliminarCategoria",
     "id":""
 
+/*--------------------- BLOGS -------------------------*/
+1) Listado de Blogs: 
+  URL: localhost/blog_konecta/
+  Parámetros: "action":"listarBlogs"
+
+2) Crear categoría: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"crearBlog",
+    "titulo":"",
+    "slug":"",
+    "textocorto":"",
+    "textolargo":"",
+    "rutaimagen":"",
+    "idcategorias":[]
+
+3) Editar blog: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"editarBlog",
+    "id","",
+    "titulo":"",
+    "slug":"",
+    "textocorto":"",
+    "textolargo":"",
+    "rutaimagen":"",
+    "idcategorias":[]
+
+4) Eliminar blog: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"eliminarBlog",
+    "id":""
+
 /*------------------------------------- FIN Documentación --------------------------------------*/

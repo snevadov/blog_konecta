@@ -321,23 +321,27 @@ class Categoria {
      * @return: Boolean
      */
     public function delete(){
-        
-        //Valido que tenga id seteado
-        if(isset($this->iId)){
 
-            //Elimino en base de datos
-            $sql = "DELETE FROM categoria WHERE id = :id";
-            $stmt = $this->dbConection->prepare($sql);
-            $stmt->execute(array(':id' => $_POST['id']));
+        if($this->verificarIntegridadEliminar()){
+            //Valido que tenga id seteado
+            if(isset($this->iId)){
 
-            $this->sMensaje = 'Categoría eliminada satisfactoriamente';
+                //Elimino en base de datos
+                $sql = "DELETE FROM categoria WHERE id = :id";
+                $stmt = $this->dbConection->prepare($sql);
+                $stmt->execute(array(':id' => $_POST['id']));
 
-            return true;
+                $this->sMensaje = 'Categoría eliminada satisfactoriamente';
 
+                return true;
+
+            } else {
+
+                $this->sMensaje = 'No se envió el identificador de la categoría';
+
+                return false;
+            }
         } else {
-
-            $this->sMensaje = 'No se envió el identificador de la categoría';
-
             return false;
         }
     }
@@ -371,13 +375,57 @@ class Categoria {
                 )
             );
         }
-        
+
         //Ejecuto la consulta
         $aCategorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $this->sMensaje = 'Todas las categorías por nombre cargadas satisfactoriamente';
 
         return $aCategorias;
+    }
+
+    /**
+     * Funcion para verificar integridad de la categoría antes de eliminarla
+     * @by: snevadov
+     * @date: 2021/01/25
+     * @return: Boolean
+     */
+    public function verificarIntegridadEliminar(){
+
+        $aCategoriaByNombre = $this->getBlogsByIdCategoria();
+        if(count($aCategoriaByNombre) > 0){
+            $this->sMensaje = 'La categoría '. $this->sNombre .' no se puede eliminar porque tiene blogs asociados.';
+            return false;
+        }
+
+        return true;
+        
+    }
+
+    /**
+     * Funcion para obtener blogs asociados por categoria
+     * @by: snevadov
+     * @date: 2021/01/25
+     * @return: Boolean
+     */
+    public function getBlogsByIdCategoria($iId = null){
+        
+        //Cargo de base de datos
+        $iId = isset($iId) ? $iId :  $this->iId;
+        
+        $stmt = $this->dbConection->prepare('SELECT idblog FROM categoriaxblog WHERE idcategoria=:id');
+        $stmt->execute(
+            array(
+                ':id' => $iId
+            )
+        );
+        
+        //Ejecuto la consulta
+        $aIdsCategorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        $this->sMensaje .= 'Todas las categorías por Blog cargadas satisfactoriamente';
+
+        return $aIdsCategorias;
     }
 
 }
