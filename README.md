@@ -37,6 +37,15 @@ CREATE TABLE usuario (
 INSERT INTO usuario (nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion) 
   VALUES ('Administrador', 'administrador@blogkonecta.com', MD5('abc123'), '3007483357',1, NOW());
 
+CREATE TABLE categoria (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(128) NOT NULL UNIQUE,
+  descripcion VARCHAR(128),
+  fechacreacion datetime,
+  fechaactualizacion datetime,
+  PRIMARY KEY(id)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 /*------------------------------------- FIN Script sistema base --------------------------------------*/
 
 /*------------------------------------- Documentación --------------------------------------*/

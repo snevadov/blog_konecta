@@ -196,7 +196,7 @@ class Categoria {
             return false;
         }
 
-        $aCategoriaByNombre = $this->getCategoriaByNombre();
+        $aCategoriaByNombre = $this->getCategoriasByNombre();
         if(count($aCategoriaByNombre) > 0){
             $this->sMensaje = 'La categoría '. $this->sNombre .' ya se encuentra registrada.';
             return false;
@@ -353,13 +353,26 @@ class Categoria {
         //Cargo de base de datos
         $sNombre = isset($sNombre) ? $sNombre :  $this->sNombre;
         $iId = isset($this->iId) ? $this->iId :  null;
-        $stmt = $this->dbConection->prepare('SELECT id FROM categoria WHERE nombre=:nombre AND id<>:id');
-        $stmt->execute(
-            array(
-                ':nombre' => $sNombre,
-                ':id' => $iId
-            )
-        );
+        
+        //Valido si tengo id (es edición) para buscar diferentes a dicho ID
+        if(isset($this->iId)){
+            $stmt = $this->dbConection->prepare('SELECT id FROM categoria WHERE nombre=:nombre AND id<>:id');
+            $stmt->execute(
+                array(
+                    ':nombre' => $sNombre,
+                    ':id' => $iId
+                )
+            );
+        } else {
+            $stmt = $this->dbConection->prepare('SELECT id FROM categoria WHERE nombre=:nombre');
+            $stmt->execute(
+                array(
+                    ':nombre' => $sNombre
+                )
+            );
+        }
+        
+        //Ejecuto la consulta
         $aCategorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $this->sMensaje = 'Todas las categorías por nombre cargadas satisfactoriamente';

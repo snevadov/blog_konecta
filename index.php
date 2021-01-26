@@ -81,6 +81,8 @@ if(isset($_REQUEST["action"])){
             
 
             break;
+
+        //Editar Usuario
         case 'editarUsuario':
             //Creo la variable usuario
             $oUsuario = new Usuario();
@@ -105,6 +107,7 @@ if(isset($_REQUEST["action"])){
             $oUsuario->setIdTipoUsuario($iIdTipoUsuario);
             $oUsuario->setFechaActualizacion($dFechaActualizacion);
 
+            //Valido que se envíe el ID para realizar una edición
             if(!isset($iId)){
                 $oRespuesta->exito = false;
                 $oRespuesta->mensaje = "No se envió el identificador del usuario";
@@ -137,7 +140,8 @@ if(isset($_REQUEST["action"])){
             
 
             break;
-
+        
+        //Eliminar Usuario
         case 'eliminarUsuario':
            //Creo la variable usuario
            $oUsuario = new Usuario();
@@ -147,17 +151,6 @@ if(isset($_REQUEST["action"])){
            
            //Seteo los datos en el modelo
            $oUsuario->setId($iId);
-
-           if(!isset($iId)){
-               $oRespuesta->exito = false;
-               $oRespuesta->mensaje = "No se envió el identificador del usuario";
-
-               //Devuelvo la respuesta
-               echo json_encode($oRespuesta);
-               header("HTTP/1.1 400 Bad Request");
-               exit();
-           }
-           
 
            //Guardo y manejo los mensajes
            if(!$oUsuario->delete()){
@@ -180,6 +173,147 @@ if(isset($_REQUEST["action"])){
            
 
            break;
+        
+        //Listado de categorías
+        case 'listarCategorias':
+            //Creo la variable categoria
+            $oCategoria = new Categoria();
+
+            //Asigno los coches a una variable que estará esperando la vista
+            $aCategorias = $oCategoria->getAll();
+
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oCategoria->getMensaje();
+            $oRespuesta->categorias = $aCategorias;
+
+            //Devuelvo la respuesta
+            echo json_encode($oRespuesta);
+            header("HTTP/1.1 200 OK");
+            exit();
+
+            break;
+        
+        //Crear categoria
+        case 'crearCategoria':
+            //Creo la variable categoria
+            $oCategoria = new Categoria();
+
+            //Valido existencia de datos
+            $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
+            $sDescripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : null;
+            $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
+
+            //Seteo los datos en el modelo
+            $oCategoria->setNombre($sNombre);
+            $oCategoria->setDescripcion($sDescripcion);
+            $oCategoria->setFechaCreacion($dFechaCreacion);
+            
+
+            //Guardo y manejo los mensajes
+            if(!$oCategoria->save()){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = $oCategoria->getMensaje();
+
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oCategoria->getMensaje();
+
+             //Devuelvo la respuesta
+             echo json_encode($oRespuesta);
+             header("HTTP/1.1 200 OK");
+             exit();
+            
+
+            break;
+
+        //Editar categoria
+        case 'editarCategoria':
+            //Creo la variable categoria
+            $oCategoria = new Categoria();
+
+            //Valido existencia de datos
+            $iId = isset($_POST['id']) ? $_POST['id'] : null;
+            $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
+            $sDescripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : null;
+            $dFechaActualizacion = isset($_POST['fechaactualizacion']) ? $_POST['fechaactualizacion'] : date('Y-m-d H:i:s');
+
+            //Seteo los datos en el modelo
+            $oCategoria->setId($iId);
+            $oCategoria->setNombre($sNombre);
+            $oCategoria->setDescripcion($sDescripcion);
+            $oCategoria->setFechaActualizacion($dFechaActualizacion);
+
+            //Valido que se envíe el ID para realizar una edición
+            if(!isset($iId)){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = "No se envió el identificador de categoría";
+ 
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+            
+
+            //Guardo y manejo los mensajes
+            if(!$oCategoria->save()){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = $oCategoria->getMensaje();
+
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oCategoria->getMensaje();
+
+             //Devuelvo la respuesta
+             echo json_encode($oRespuesta);
+             header("HTTP/1.1 200 OK");
+             exit();
+            
+
+            break;
+        
+        //Eliminar Categoria
+        case 'eliminarCategoria':
+            //Creo la variable categoría
+            $oCategoria = new Categoria();
+ 
+            //Valido existencia de datos
+            $iId = isset($_POST['id']) ? $_POST['id'] : null;
+            
+            //Seteo los datos en el modelo
+            $oCategoria->setId($iId);
+ 
+            //Guardo y manejo los mensajes
+            if(!$oCategoria->delete()){
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = $oCategoria->getMensaje();
+ 
+                //Devuelvo la respuesta
+                echo json_encode($oRespuesta);
+                header("HTTP/1.1 400 Bad Request");
+                exit();
+            }
+ 
+            $oRespuesta->exito = true;
+            $oRespuesta->mensaje = $oCategoria->getMensaje();
+ 
+             //Devuelvo la respuesta
+             echo json_encode($oRespuesta);
+             header("HTTP/1.1 200 OK");
+             exit();
+            
+ 
+            break;
 
         default:
             //Creo la variable usuario

@@ -502,13 +502,26 @@ class Usuario {
         //Cargo de base de datos
         $sIdentificacion = isset($sIdentificacion) ? $sIdentificacion :  $this->sIdentificacion;
         $iId = isset($this->iId) ? $this->iId :  null;
-        $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE identificacion=:identificacion AND id<>:id');
-        $stmt->execute(
-            array(
-                ':identificacion' => $sIdentificacion,
-                ':id' => $iId
-            )
-        );
+
+        //Valido si tengo id (es edición) para buscar diferentes a dicho ID
+        if(isset($this->iId)){
+            $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE identificacion=:identificacion AND id<>:id');
+            $stmt->execute(
+                array(
+                    ':identificacion' => $sIdentificacion,
+                    ':id' => $iId
+                )
+            );
+        } else {
+            $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE identificacion=:identificacion');
+            $stmt->execute(
+                array(
+                    ':identificacion' => $sIdentificacion
+                )
+            );
+        }
+
+        //Ejecuto la consulta
         $aUsuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $this->sMensaje = 'Todos los usuarios por identificación cargados satisfactoriamente';
