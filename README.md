@@ -1,6 +1,7 @@
 Prueba Técnica para Desarrollador Konecta.
-
-/*------------------------------------- Script sistema base --------------------------------------*/
+/*----------------------------------------------------------------------------------------------------*/
+/*--------------------------------------- Script sistema base ----------------------------------------*/
+/*----------------------------------------------------------------------------------------------------*/
 CREATE DATABASE blog_konecta;
 
 USE blog_konecta;
@@ -46,13 +47,14 @@ CREATE TABLE categoria (
   PRIMARY KEY(id)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-/*------------------------------------- FIN Script sistema base --------------------------------------*/
-
-/*------------------------------------- Documentación --------------------------------------*/
+/*----------------------------------------------------------------------------------------------------*/
+/*--------------------------------------- Documentación API ------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------*/
 Listado de URLs RestAPI.
 
 URL Backend: localhost/blog_konecta/
 
+/*--------------------- USUARIOS -------------------------*/
 1) Listado de usuarios: 
   URL: localhost/blog_konecta/
   Parámetros: "action":"listarUsuarios"
@@ -85,3 +87,31 @@ URL Backend: localhost/blog_konecta/
   Parámetros: 
     "action":"eliminarUsuario",
     "id":""
+
+/*--------------------- CATEGORÍAS -------------------------*/
+1) Listado de categorías: 
+  URL: localhost/blog_konecta/
+  Parámetros: "action":"listarCategorias"
+
+2) Crear categoría: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"crearCategoria",
+    "nombre":"",
+    "descripcion":""
+
+3) Editar categoría: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"editarCategoria",
+    "id":"",
+    "nombre":"",
+    "descripcion":""
+
+4) Eliminar categoría: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"eliminarCategoria",
+    "id":""
+
+/*------------------------------------- FIN Documentación --------------------------------------*/
