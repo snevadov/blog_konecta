@@ -519,7 +519,7 @@ if(isset($_REQUEST["action"])){
             $aUsuarios = $oUsuario->getAll();
 
             $oRespuesta->exito = true;
-            $oRespuesta->mensaje = "Default ".$oUsuario->getMensaje();
+            $oRespuesta->mensaje = $oUsuario->getMensaje();
             $oRespuesta->usuarios = $aUsuarios;
 
             //Devuelvo el listado de usuarios
@@ -537,7 +537,7 @@ if(isset($_REQUEST["action"])){
     $aUsuarios = $oUsuario->getAll();
 
     $oRespuesta->exito = true;
-    $oRespuesta->mensaje = 'Else '.$oUsuario->getMensaje();
+    $oRespuesta->mensaje = $oUsuario->getMensaje();
     $oRespuesta->usuarios = $aUsuarios;
 
     //Devuelvo el listado de usuarios

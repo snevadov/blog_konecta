@@ -540,6 +540,11 @@ class Usuario {
         //Variables por defecto
         $sCorreo = isset($sCorreo) ? $sCorreo :  $this->sCorreo;
         $sContrasena = isset($sContrasena) ? $sContrasena : $this->sContrasena;
+
+        if(!isset($sCorreo) ||  !isset($sContrasena)){
+            $this->sMensaje = 'El usuario y la contraseña son requeridos.';
+            return false;
+        }
         
         //Cargo de base de datos
         $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE correo=:correo AND contrasena=:contrasena');
@@ -568,8 +573,6 @@ class Usuario {
             $this->sMensaje = 'Combinación de usuario y contraseña incorrecta.';
             return false;
         }
-
-        return $aUsuarios;
     }    
 
 }
