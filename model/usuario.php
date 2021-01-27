@@ -348,58 +348,66 @@ class Usuario {
      * @return: Boolean
      */
     public function save(){
-        
-        //Verifico la integridad        
-        if(!$this->verificarIntegridad()){
+
+        try {
+            //Verifico la integridad        
+            if(!$this->verificarIntegridad()){
+                return false;
+            }
+
+            //Si tiene el id seteado, es update
+            if(isset($this->iId)){
+                //Inserto en base de datos
+                $stmt = $this->dbConection->prepare('UPDATE usuario
+                SET identificacion=:identificacion, nombre=:nombre, correo=:correo, contrasena=:contrasena, numeromovil=:numeromovil, 
+                    idtipousuario=:idtipousuario, fechaactualizacion=:fechaactualizacion
+                WHERE id=:id');
+                $stmt->execute(
+                    array(
+                        ':identificacion' => $this->sIdentificacion,
+                        ':nombre' => $this->sNombre,
+                        ':correo' => $this->sCorreo,
+                        ':contrasena' => $this->sContrasena,
+                        ':numeromovil' => $this->sNumeroMovil,
+                        ':idtipousuario' => $this->iIdTipoUsuario,
+                        ':fechaactualizacion' => $this->dFechaActualizacion,
+                        ':id' => $this->iId
+                    )
+                );
+
+                $this->sMensaje = 'Usuario actualizado satisfactoriamente';
+
+                return true;
+            } else {
+                //Inserto en base de datos
+                $stmt = $this->dbConection->prepare('INSERT INTO usuario
+                (identificacion, nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion) 
+                VALUES (:identificacion, :nombre, :correo, :contrasena, :numeromovil, :idtipousuario, :fechacreacion)');
+                $stmt->execute(
+                    array(
+                        ':identificacion' => $this->sIdentificacion,
+                        ':nombre' => $this->sNombre,
+                        ':correo' => $this->sCorreo,
+                        ':contrasena' => $this->sContrasena,
+                        ':numeromovil' => $this->sNumeroMovil,
+                        ':idtipousuario' => $this->iIdTipoUsuario,
+                        ':fechacreacion' => $this->dFechaCreacion
+                    )
+                );
+
+                $this->iId = $this->dbConection->lastInsertId();
+
+                $this->sMensaje = 'Usuario insertado satisfactoriamente';
+
+                return true;
+            }
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
             return false;
         }
-
-        //Si tiene el id seteado, es update
-        if(isset($this->iId)){
-            //Inserto en base de datos
-            $stmt = $this->dbConection->prepare('UPDATE usuario
-            SET identificacion=:identificacion, nombre=:nombre, correo=:correo, contrasena=:contrasena, numeromovil=:numeromovil, 
-                idtipousuario=:idtipousuario, fechaactualizacion=:fechaactualizacion
-            WHERE id=:id');
-            $stmt->execute(
-                array(
-                    ':identificacion' => $this->sIdentificacion,
-                    ':nombre' => $this->sNombre,
-                    ':correo' => $this->sCorreo,
-                    ':contrasena' => $this->sContrasena,
-                    ':numeromovil' => $this->sNumeroMovil,
-                    ':idtipousuario' => $this->iIdTipoUsuario,
-                    ':fechaactualizacion' => $this->dFechaActualizacion,
-                    ':id' => $this->iId
-                )
-            );
-
-            $this->sMensaje = 'Usuario actualizado satisfactoriamente';
-
-            return true;
-        } else {
-            //Inserto en base de datos
-            $stmt = $this->dbConection->prepare('INSERT INTO usuario
-            (identificacion, nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion) 
-            VALUES (:identificacion, :nombre, :correo, :contrasena, :numeromovil, :idtipousuario, :fechacreacion)');
-            $stmt->execute(
-                array(
-                    ':identificacion' => $this->sIdentificacion,
-                    ':nombre' => $this->sNombre,
-                    ':correo' => $this->sCorreo,
-                    ':contrasena' => $this->sContrasena,
-                    ':numeromovil' => $this->sNumeroMovil,
-                    ':idtipousuario' => $this->iIdTipoUsuario,
-                    ':fechacreacion' => $this->dFechaCreacion
-                )
-            );
-
-            $this->iId = $this->dbConection->lastInsertId();
-
-            $this->sMensaje = 'Usuario insertado satisfactoriamente';
-
-            return true;
-        }
+        
+        
     }
 
     /**
@@ -410,35 +418,41 @@ class Usuario {
      */
     public function load(){
 
-        //Valido que tenga el id seteado
-        if(isset($this->iId)){
-            //Cargo de base de datos
-            $stmt = $this->dbConection->prepare('SELECT 
-            identificacion, nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion, fechaactualizacion FROM usuario
-            WHERE id=:id');
-            $stmt->execute(
-                array(
-                    ':id' => $this->iId
-                )
-            );
+        try {
+            //Valido que tenga el id seteado
+            if(isset($this->iId)){
+                //Cargo de base de datos
+                $stmt = $this->dbConection->prepare('SELECT 
+                identificacion, nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion, fechaactualizacion FROM usuario
+                WHERE id=:id');
+                $stmt->execute(
+                    array(
+                        ':id' => $this->iId
+                    )
+                );
 
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $this->sIdentificacion = htmlentities($row['identificacion']);
-            $this->sNombre = htmlentities($row['nombre']);
-            $this->sCorreo = htmlentities($row['correo']);
-            $this->sNumeroMovil = htmlentities($row['numeromovil']);
-            $this->iIdTipoUsuario = htmlentities($row['idtipousuario']);
-            $this->dFechaCreacion = htmlentities($row['fechacreacion']);
-            $this->dFechaActualizacion = htmlentities($row['fechaactualizacion']);
+                $this->sIdentificacion = htmlentities($row['identificacion']);
+                $this->sNombre = htmlentities($row['nombre']);
+                $this->sCorreo = htmlentities($row['correo']);
+                $this->sNumeroMovil = htmlentities($row['numeromovil']);
+                $this->iIdTipoUsuario = htmlentities($row['idtipousuario']);
+                $this->dFechaCreacion = htmlentities($row['fechacreacion']);
+                $this->dFechaActualizacion = htmlentities($row['fechaactualizacion']);
 
 
-            $this->sMensaje = 'Usuario cargado satisfactoriamente';
+                $this->sMensaje = 'Usuario cargado satisfactoriamente';
 
-            return true;
-        } else {
-            
-            $this->sMensaje = 'No se envió el identificador del usuario';
+                return true;
+            } else {
+                
+                $this->sMensaje = 'No se envió el identificador del usuario';
+
+                return false;
+            }
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
 
             return false;
         }
@@ -451,16 +465,22 @@ class Usuario {
      * @return: array
      */
     public function getAll(){
-        //Cargo de base de datos
-        $stmt = $this->dbConection->query('SELECT u.id, u.identificacion, u.nombre, u.correo, u.idtipousuario, u.numeromovil, tu.nombre AS tipousuario,
-             u.fechacreacion, u.fechaactualizacion 
-        FROM usuario AS u
-        INNER JOIN tipousuario AS tu ON (u.idtipousuario = tu.id)');
-        $aUsuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            //Cargo de base de datos
+            $stmt = $this->dbConection->query('SELECT u.id, u.identificacion, u.nombre, u.correo, u.idtipousuario, u.numeromovil, tu.nombre AS tipousuario,
+                    u.fechacreacion, u.fechaactualizacion 
+            FROM usuario AS u
+            INNER JOIN tipousuario AS tu ON (u.idtipousuario = tu.id)');
+            $aUsuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $this->sMensaje = 'Todos los usuarios cargados satisfactoriamente';
+            $this->sMensaje = 'Todos los usuarios cargados satisfactoriamente';
 
-        return $aUsuarios;
+            return $aUsuarios;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return array();
+        }
     }
 
     /**
@@ -470,22 +490,28 @@ class Usuario {
      * @return: Boolean
      */
     public function delete(){
-        
-        //Valido que tenga id seteado
-        if(isset($this->iId)){
 
-            //Elimino en base de datos
-            $sql = "DELETE FROM usuario WHERE id = :id";
-            $stmt = $this->dbConection->prepare($sql);
-            $stmt->execute(array(':id' => $_POST['id']));
+        try {
+            //Valido que tenga id seteado
+            if(isset($this->iId)){
 
-            $this->sMensaje = 'Usuario eliminado satisfactoriamente';
+                //Elimino en base de datos
+                $sql = "DELETE FROM usuario WHERE id = :id";
+                $stmt = $this->dbConection->prepare($sql);
+                $stmt->execute(array(':id' => $_POST['id']));
 
-            return true;
+                $this->sMensaje = 'Usuario eliminado satisfactoriamente';
 
-        } else {
+                return true;
 
-            $this->sMensaje = 'No se envió el identificador del usuario';
+            } else {
+
+                $this->sMensaje = 'No se envió el identificador del usuario';
+
+                return false;
+            }
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
 
             return false;
         }
@@ -498,35 +524,41 @@ class Usuario {
      * @return: array
      */
     public function getUsuariosByIdentificacion($sIdentificacion = null){
-        
-        //Cargo de base de datos
-        $sIdentificacion = isset($sIdentificacion) ? $sIdentificacion :  $this->sIdentificacion;
-        $iId = isset($this->iId) ? $this->iId :  null;
 
-        //Valido si tengo id (es edición) para buscar diferentes a dicho ID
-        if(isset($this->iId)){
-            $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE identificacion=:identificacion AND id<>:id');
-            $stmt->execute(
-                array(
-                    ':identificacion' => $sIdentificacion,
-                    ':id' => $iId
-                )
-            );
-        } else {
-            $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE identificacion=:identificacion');
-            $stmt->execute(
-                array(
-                    ':identificacion' => $sIdentificacion
-                )
-            );
+        try {
+            //Cargo de base de datos
+            $sIdentificacion = isset($sIdentificacion) ? $sIdentificacion :  $this->sIdentificacion;
+            $iId = isset($this->iId) ? $this->iId :  null;
+
+            //Valido si tengo id (es edición) para buscar diferentes a dicho ID
+            if(isset($this->iId)){
+                $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE identificacion=:identificacion AND id<>:id');
+                $stmt->execute(
+                    array(
+                        ':identificacion' => $sIdentificacion,
+                        ':id' => $iId
+                    )
+                );
+            } else {
+                $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE identificacion=:identificacion');
+                $stmt->execute(
+                    array(
+                        ':identificacion' => $sIdentificacion
+                    )
+                );
+            }
+
+            //Ejecuto la consulta
+            $aUsuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $this->sMensaje = 'Todos los usuarios por identificación cargados satisfactoriamente';
+
+            return $aUsuarios;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return array();
         }
-
-        //Ejecuto la consulta
-        $aUsuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $this->sMensaje = 'Todos los usuarios por identificación cargados satisfactoriamente';
-
-        return $aUsuarios;
     }
 
     /**
@@ -537,40 +569,46 @@ class Usuario {
      */
     public function loguearUsuario($sCorreo = null, $sContrasena = null){
 
-        //Variables por defecto
-        $sCorreo = isset($sCorreo) ? $sCorreo :  $this->sCorreo;
-        $sContrasena = isset($sContrasena) ? $sContrasena : $this->sContrasena;
+        try {
+            //Variables por defecto
+            $sCorreo = isset($sCorreo) ? $sCorreo :  $this->sCorreo;
+            $sContrasena = isset($sContrasena) ? $sContrasena : $this->sContrasena;
 
-        if(!isset($sCorreo) ||  !isset($sContrasena)){
-            $this->sMensaje = 'El usuario y la contraseña son requeridos.';
-            return false;
-        }
-        
-        //Cargo de base de datos
-        $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE correo=:correo AND contrasena=:contrasena');
-        $stmt->execute(
-            array(
-                ':correo' => $sCorreo,
-                ':contrasena' => $sContrasena
-            )
-        );
-
-        //Ejecuto la consulta
-        $oIdUsuario = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if(isset($oIdUsuario['id'])){
-            $this->iId = $oIdUsuario['id'];
-            
-            if($this->load()){
-                $this->sMensaje = 'Login satisfactorio';
-                return true;
-            }
-            else{
+            if(!isset($sCorreo) ||  !isset($sContrasena)){
+                $this->sMensaje = 'El usuario y la contraseña son requeridos.';
                 return false;
             }
+            
+            //Cargo de base de datos
+            $stmt = $this->dbConection->prepare('SELECT id FROM usuario WHERE correo=:correo AND contrasena=:contrasena');
+            $stmt->execute(
+                array(
+                    ':correo' => $sCorreo,
+                    ':contrasena' => $sContrasena
+                )
+            );
 
-        } else{
-            $this->sMensaje = 'Combinación de usuario y contraseña incorrecta.';
+            //Ejecuto la consulta
+            $oIdUsuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if(isset($oIdUsuario['id'])){
+                $this->iId = $oIdUsuario['id'];
+                
+                if($this->load()){
+                    $this->sMensaje = 'Login satisfactorio';
+                    return true;
+                }
+                else{
+                    return false;
+                }
+
+            } else{
+                $this->sMensaje = 'Combinación de usuario y contraseña incorrecta.';
+                return false;
+            }
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
             return false;
         }
     }    

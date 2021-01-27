@@ -73,9 +73,9 @@ if(isset($_REQUEST["action"])){
                 exit();
             }
 
-            $oRespuesta->usuarios = $oUsuario->getAll();
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oUsuario->getMensaje();
+            $oRespuesta->usuarios = $oUsuario->getAll();
 
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);
@@ -95,7 +95,7 @@ if(isset($_REQUEST["action"])){
             $sIdentificacion = isset($_POST['identificacion']) ? $_POST['identificacion'] : null;
             $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
             $sCorreo = isset($_POST['correo']) ? $_POST['correo'] : null;
-            $sContrasena = isset($_POST['contrasena']) ? md5($_POST['contrasena']) : null;
+            $sContrasena = (!isset($_POST['contrasena']) ||  $_POST['contrasena']=="") ? null: md5($_POST['contrasena']);
             $sNumeroMovil = isset($_POST['numeromovil']) ? $_POST['numeromovil'] : null;
             $iIdTipoUsuario = isset($_POST['idtipousuario']) ? $_POST['idtipousuario'] : null;
             $dFechaActualizacion = isset($_POST['fechaactualizacion']) ? $_POST['fechaactualizacion'] : date('Y-m-d H:i:s');
@@ -131,9 +131,9 @@ if(isset($_REQUEST["action"])){
                 exit();
             }
 
-            $oRespuesta->usuarios = $oUsuario->getAll();
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oUsuario->getMensaje();
+            $oRespuesta->usuarios = $oUsuario->getAll();
 
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);
@@ -564,7 +564,7 @@ if(isset($_REQUEST["action"])){
             $oRespuesta->mensaje = $oUsuario->getMensaje();
             $oRespuesta->usuarios = $aUsuarios;
 
-            //Devuelvo el listado de usuarios
+            //Devuelvo la respuesta
             echo json_encode($oRespuesta);
             header("HTTP/1.1 200 OK");
             exit();
@@ -582,7 +582,7 @@ if(isset($_REQUEST["action"])){
     $oRespuesta->mensaje = $oUsuario->getMensaje();
     $oRespuesta->usuarios = $aUsuarios;
 
-    //Devuelvo el listado de usuarios
+    //Devuelvo la respuesta
     echo json_encode($oRespuesta);
     header("HTTP/1.1 200 OK");
     exit();
