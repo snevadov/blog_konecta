@@ -213,48 +213,54 @@ class Categoria {
      * @return: Boolean
      */
     public function save(){
-        
-        //Verifico la integridad        
-        if(!$this->verificarIntegridad()){
+
+        try {
+            //Verifico la integridad        
+            if(!$this->verificarIntegridad()){
+                return false;
+            }
+
+            //Si tiene el id seteado, es update
+            if(isset($this->iId)){
+                //Inserto en base de datos
+                $stmt = $this->dbConection->prepare('UPDATE categoria
+                SET nombre=:nombre, descripcion=:descripcion, fechaactualizacion=:fechaactualizacion
+                WHERE id=:id');
+                $stmt->execute(
+                    array(
+                        ':nombre' => $this->sNombre,
+                        ':descripcion' => $this->sDescripcion,
+                        ':fechaactualizacion' => $this->dFechaActualizacion,
+                        ':id' => $this->iId
+                    )
+                );
+
+                $this->sMensaje = 'Categoría actualizada satisfactoriamente';
+
+                return true;
+            } else {
+                //Inserto en base de datos
+                $stmt = $this->dbConection->prepare('INSERT INTO categoria
+                (nombre, descripcion, fechacreacion) 
+                VALUES (:nombre, :descripcion, :fechacreacion)');
+                $stmt->execute(
+                    array(
+                        ':nombre' => $this->sNombre,
+                        ':descripcion' => $this->sDescripcion,
+                        ':fechacreacion' => $this->dFechaCreacion
+                    )
+                );
+
+                $this->iId = $this->dbConection->lastInsertId();
+
+                $this->sMensaje = 'Categoría insertada satisfactoriamente';
+
+                return true;
+            }
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
             return false;
-        }
-
-        //Si tiene el id seteado, es update
-        if(isset($this->iId)){
-            //Inserto en base de datos
-            $stmt = $this->dbConection->prepare('UPDATE categoria
-            SET nombre=:nombre, descripcion=:descripcion, fechaactualizacion=:fechaactualizacion
-            WHERE id=:id');
-            $stmt->execute(
-                array(
-                    ':nombre' => $this->sNombre,
-                    ':descripcion' => $this->sDescripcion,
-                    ':fechaactualizacion' => $this->dFechaActualizacion,
-                    ':id' => $this->iId
-                )
-            );
-
-            $this->sMensaje = 'Categoría actualizada satisfactoriamente';
-
-            return true;
-        } else {
-            //Inserto en base de datos
-            $stmt = $this->dbConection->prepare('INSERT INTO categoria
-            (nombre, descripcion, fechacreacion) 
-            VALUES (:nombre, :descripcion, :fechacreacion)');
-            $stmt->execute(
-                array(
-                    ':nombre' => $this->sNombre,
-                    ':descripcion' => $this->sDescripcion,
-                    ':fechacreacion' => $this->dFechaCreacion
-                )
-            );
-
-            $this->iId = $this->dbConection->lastInsertId();
-
-            $this->sMensaje = 'Categoría insertada satisfactoriamente';
-
-            return true;
         }
     }
 
@@ -266,32 +272,38 @@ class Categoria {
      */
     public function load(){
 
-        //Valido que tenga el id seteado
-        if(isset($this->iId)){
-            //Cargo de base de datos
-            $stmt = $this->dbConection->prepare('SELECT 
-            nombre, descripcion, fechacreacion, fechaactualizacion FROM categoria
-            WHERE id=:id');
-            $stmt->execute(
-                array(
-                    ':id' => $this->iId
-                )
-            );
+        try {
+            //Valido que tenga el id seteado
+            if(isset($this->iId)){
+                //Cargo de base de datos
+                $stmt = $this->dbConection->prepare('SELECT 
+                nombre, descripcion, fechacreacion, fechaactualizacion FROM categoria
+                WHERE id=:id');
+                $stmt->execute(
+                    array(
+                        ':id' => $this->iId
+                    )
+                );
 
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $this->sNombre = htmlentities($row['nombre']);
-            $this->sDescripcion = htmlentities($row['descripcion']);
-            $this->dFechaCreacion = htmlentities($row['fechacreacion']);
-            $this->dFechaActualizacion = htmlentities($row['fechaactualizacion']);
+                $this->sNombre = htmlentities($row['nombre']);
+                $this->sDescripcion = htmlentities($row['descripcion']);
+                $this->dFechaCreacion = htmlentities($row['fechacreacion']);
+                $this->dFechaActualizacion = htmlentities($row['fechaactualizacion']);
 
 
-            $this->sMensaje = 'Categoría cargada satisfactoriamente';
+                $this->sMensaje = 'Categoría cargada satisfactoriamente';
 
-            return true;
-        } else {
-            
-            $this->sMensaje = 'No se envió el identificador de la categoría';
+                return true;
+            } else {
+                
+                $this->sMensaje = 'No se envió el identificador de la categoría';
+
+                return false;
+            }
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
 
             return false;
         }
@@ -304,14 +316,21 @@ class Categoria {
      * @return: array
      */
     public function getAll(){
-        //Cargo de base de datos
-        $stmt = $this->dbConection->query('SELECT id, nombre, descripcion, fechacreacion, fechaactualizacion 
-        FROM categoria');
-        $aCategorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $this->sMensaje = 'Todas las categorías cargadas satisfactoriamente';
+        try {
+            //Cargo de base de datos
+            $stmt = $this->dbConection->query('SELECT id, nombre, descripcion, fechacreacion, fechaactualizacion 
+            FROM categoria');
+            $aCategorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $aCategorias;
+            $this->sMensaje = 'Todas las categorías cargadas satisfactoriamente';
+
+            return $aCategorias;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return array();
+        }
     }
 
     /**
@@ -322,26 +341,32 @@ class Categoria {
      */
     public function delete(){
 
-        if($this->verificarIntegridadEliminar()){
-            //Valido que tenga id seteado
-            if(isset($this->iId)){
-
-                //Elimino en base de datos
-                $sql = "DELETE FROM categoria WHERE id = :id";
-                $stmt = $this->dbConection->prepare($sql);
-                $stmt->execute(array(':id' => $_POST['id']));
-
-                $this->sMensaje = 'Categoría eliminada satisfactoriamente';
-
-                return true;
-
+        try {
+            if($this->verificarIntegridadEliminar()){
+                //Valido que tenga id seteado
+                if(isset($this->iId)){
+    
+                    //Elimino en base de datos
+                    $sql = "DELETE FROM categoria WHERE id = :id";
+                    $stmt = $this->dbConection->prepare($sql);
+                    $stmt->execute(array(':id' => $_POST['id']));
+    
+                    $this->sMensaje = 'Categoría eliminada satisfactoriamente';
+    
+                    return true;
+    
+                } else {
+    
+                    $this->sMensaje = 'No se envió el identificador de la categoría';
+    
+                    return false;
+                }
             } else {
-
-                $this->sMensaje = 'No se envió el identificador de la categoría';
-
                 return false;
             }
-        } else {
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
             return false;
         }
     }
@@ -353,35 +378,41 @@ class Categoria {
      * @return: array
      */
     public function getCategoriasByNombre($sNombre = null){
-        
-        //Cargo de base de datos
-        $sNombre = isset($sNombre) ? $sNombre :  $this->sNombre;
-        $iId = isset($this->iId) ? $this->iId :  null;
-        
-        //Valido si tengo id (es edición) para buscar diferentes a dicho ID
-        if(isset($this->iId)){
-            $stmt = $this->dbConection->prepare('SELECT id FROM categoria WHERE nombre=:nombre AND id<>:id');
-            $stmt->execute(
-                array(
-                    ':nombre' => $sNombre,
-                    ':id' => $iId
-                )
-            );
-        } else {
-            $stmt = $this->dbConection->prepare('SELECT id FROM categoria WHERE nombre=:nombre');
-            $stmt->execute(
-                array(
-                    ':nombre' => $sNombre
-                )
-            );
+
+        try {
+            //Cargo de base de datos
+            $sNombre = isset($sNombre) ? $sNombre :  $this->sNombre;
+            $iId = isset($this->iId) ? $this->iId :  null;
+            
+            //Valido si tengo id (es edición) para buscar diferentes a dicho ID
+            if(isset($this->iId)){
+                $stmt = $this->dbConection->prepare('SELECT id FROM categoria WHERE nombre=:nombre AND id<>:id');
+                $stmt->execute(
+                    array(
+                        ':nombre' => $sNombre,
+                        ':id' => $iId
+                    )
+                );
+            } else {
+                $stmt = $this->dbConection->prepare('SELECT id FROM categoria WHERE nombre=:nombre');
+                $stmt->execute(
+                    array(
+                        ':nombre' => $sNombre
+                    )
+                );
+            }
+
+            //Ejecuto la consulta
+            $aCategorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $this->sMensaje = 'Todas las categorías por nombre cargadas satisfactoriamente';
+
+            return $aCategorias;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return array();
         }
-
-        //Ejecuto la consulta
-        $aCategorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $this->sMensaje = 'Todas las categorías por nombre cargadas satisfactoriamente';
-
-        return $aCategorias;
     }
 
     /**
@@ -409,23 +440,29 @@ class Categoria {
      * @return: array
      */
     public function getBlogsByIdCategoria($iId = null){
-        
-        //Cargo de base de datos
-        $iId = isset($iId) ? $iId :  $this->iId;
-        
-        $stmt = $this->dbConection->prepare('SELECT idblog FROM categoriaxblog WHERE idcategoria=:id');
-        $stmt->execute(
-            array(
-                ':id' => $iId
-            )
-        );
-        
-        //Ejecuto la consulta
-        $aIdsCategorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        $this->sMensaje .= 'Todas las categorías por Blog cargadas satisfactoriamente';
+        try {
+            //Cargo de base de datos
+            $iId = isset($iId) ? $iId :  $this->iId;
+            
+            $stmt = $this->dbConection->prepare('SELECT idblog FROM categoriaxblog WHERE idcategoria=:id');
+            $stmt->execute(
+                array(
+                    ':id' => $iId
+                )
+            );
+            
+            //Ejecuto la consulta
+            $aIdsCategorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        return $aIdsCategorias;
+            $this->sMensaje .= 'Todas las categorías por Blog cargadas satisfactoriamente';
+
+            return $aIdsCategorias;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return array();
+        }
     }
 
 }

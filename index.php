@@ -214,14 +214,10 @@ if(isset($_REQUEST["action"])){
             //Guardo y manejo los mensajes
             if(!$oCategoria->save()){
                 $oRespuesta->exito = false;
-                $oRespuesta->mensaje = $oCategoria->getMensaje();
-
-                //Devuelvo la respuesta
-                echo json_encode($oRespuesta);
-                exit();
+            } else {
+                $oRespuesta->exito = true;
             }
 
-            $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oCategoria->getMensaje();
             $oRespuesta->categorias = $oCategoria->getAll();
 
@@ -257,6 +253,7 @@ if(isset($_REQUEST["action"])){
  
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
+                header("HTTP/1.1 200 OK");
                 exit();
             }
             
@@ -264,14 +261,10 @@ if(isset($_REQUEST["action"])){
             //Guardo y manejo los mensajes
             if(!$oCategoria->save()){
                 $oRespuesta->exito = false;
-                $oRespuesta->mensaje = $oCategoria->getMensaje();
-
-                //Devuelvo la respuesta
-                echo json_encode($oRespuesta);
-                exit();
+            } else {
+                $oRespuesta->exito = true;
             }
 
-            $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oCategoria->getMensaje();
             $oRespuesta->categorias = $oCategoria->getAll();
 
@@ -297,16 +290,12 @@ if(isset($_REQUEST["action"])){
             //Guardo y manejo los mensajes
             if(!$oCategoria->delete()){
                 $oRespuesta->exito = false;
-                $oRespuesta->mensaje = $oCategoria->getMensaje();
- 
-                //Devuelvo la respuesta
-                echo json_encode($oRespuesta);
-                exit();
+            } else {
+                $oRespuesta->exito = true;
             }
- 
-            $oRespuesta->exito = true;
+
             $oRespuesta->mensaje = $oCategoria->getMensaje();
-            $oRespuesta->categorias = $oCategoria->getAll();
+            $oRespuesta->categorias = $oCategoria->getAll();            
  
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);
@@ -366,13 +355,11 @@ if(isset($_REQUEST["action"])){
             //Guardo y manejo los mensajes
             if(!$oBlog->save()){
                 $oRespuesta->exito = false;
-                $oRespuesta->mensaje = $oBlog->getMensaje();
 
             } else {
                 $oRespuesta->exito = true;
-                $oRespuesta->mensaje = $oBlog->getMensaje();
             }
-
+            $oRespuesta->mensaje = $oBlog->getMensaje();
             $oRespuesta->blogs = $oBlog->getAll();
 
              //Devuelvo la respuesta
