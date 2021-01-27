@@ -228,6 +228,7 @@ if(isset($_REQUEST["action"])){
 
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oCategoria->getMensaje();
+            $oRespuesta->categorias = $oCategoria->getAll();
 
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);
@@ -279,6 +280,7 @@ if(isset($_REQUEST["action"])){
 
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oCategoria->getMensaje();
+            $oRespuesta->categorias = $oCategoria->getAll();
 
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);
@@ -312,6 +314,7 @@ if(isset($_REQUEST["action"])){
  
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oCategoria->getMensaje();
+            $oRespuesta->categorias = $oCategoria->getAll();
  
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);
