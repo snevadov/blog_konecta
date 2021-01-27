@@ -418,7 +418,7 @@ class Blog {
             $this->sRutaImagen = $row['rutaimagen'];
             $this->dFechaCreacion = $row['fechacreacion'];
             $this->dFechaActualizacion = $row['fechaactualizacion'];
-            $this->aIdsCategorias = $this->getIdsCategorias();
+            $this->aIdsCategorias = $this->getCategoriasxBlog();
 
 
             $this->sMensaje = 'Blog cargado satisfactoriamente';

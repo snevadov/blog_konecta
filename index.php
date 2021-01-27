@@ -496,6 +496,7 @@ if(isset($_REQUEST["action"])){
             //Cargo el blog
             if($oBlog->getBlogById($iId)){
                 $oBlogCargado = new stdClass();
+                $oBlogCargado->id = $oBlog->getId();
                 $oBlogCargado->titulo = $oBlog->getTitulo();
                 $oBlogCargado->slug = $oBlog->getSlug();
                 $oBlogCargado->textocorto = $oBlog->getTextoCorto();
