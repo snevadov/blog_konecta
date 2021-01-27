@@ -411,13 +411,13 @@ class Blog {
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $this->sTitulo = htmlentities($row['titulo']);
-            $this->sSlug = htmlentities($row['slug']);
-            $this->sTextoCorto = htmlentities($row['textocorto']);
-            $this->sTextoLargo = htmlentities($row['textolargo']);
-            $this->sRutaImagen = htmlentities($row['rutaimagen']);
-            $this->dFechaCreacion = htmlentities($row['fechacreacion']);
-            $this->dFechaActualizacion = htmlentities($row['fechaactualizacion']);
+            $this->sTitulo = $row['titulo'];
+            $this->sSlug = $row['slug'];
+            $this->sTextoCorto = $row['textocorto'];
+            $this->sTextoLargo = $row['textolargo'];
+            $this->sRutaImagen = $row['rutaimagen'];
+            $this->dFechaCreacion = $row['fechacreacion'];
+            $this->dFechaActualizacion = $row['fechaactualizacion'];
             $this->aIdsCategorias = $this->getIdsCategorias();
 
 
