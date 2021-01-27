@@ -1,10 +1,12 @@
-Prueba Técnica para Desarrollador Konecta.
-Por: snevadov
-Fecha creación: 2021/01/25
-Fecha actualización: 2021/01/25
-/*----------------------------------------------------------------------------------------------------*/
-/*--------------------------------------- Script sistema base ----------------------------------------*/
-/*----------------------------------------------------------------------------------------------------*/
+### Prueba Técnica para Desarrollador Konecta.
+### Por: snevadov
+### Fecha creación: 2021/01/25
+### Fecha actualización: 2021/01/25
+
+
+### /*----------------------------------------------------------------------------------------------------*/
+### /*--------------------------------------- Script sistema base ----------------------------------------*/
+### /*----------------------------------------------------------------------------------------------------*/
 CREATE DATABASE blog_konecta;
 
 USE blog_konecta;
@@ -74,14 +76,18 @@ CREATE TABLE categoriaxblog (
   UNIQUE KEY `idcategoria_x_idblog` (`idcategoria`,`idblog`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-/*----------------------------------------------------------------------------------------------------*/
-/*--------------------------------------- Documentación API ------------------------------------------*/
-/*----------------------------------------------------------------------------------------------------*/
-Listado de URLs RestAPI.
+### /*----------------------------------------------------------------------------------------------------*/
+### /*--------------------------------------- Documentación API ------------------------------------------*/
+### /*----------------------------------------------------------------------------------------------------*/
+### Listado de URLs RestAPI.
 
-URL Backend: localhost/blog_konecta/
+### URL BackEnd: 
+localhost/blog_konecta/
 
-/*--------------------- USUARIOS -------------------------*/
+### URL FrontEnd: 
+localhost/blogsKonecta/
+
+### /*--------------------- USUARIOS -------------------------*/
 1) Listado de usuarios: 
   URL: localhost/blog_konecta/
   Parámetros: "action":"listarUsuarios"
@@ -122,7 +128,7 @@ URL Backend: localhost/blog_konecta/
     "correo":"",
     "contrasena":""
 
-/*--------------------- CATEGORÍAS -------------------------*/
+### /*--------------------- CATEGORÍAS -------------------------*/
 1) Listado de categorías: 
   URL: localhost/blog_konecta/
   Parámetros: "action":"listarCategorias"
@@ -148,7 +154,7 @@ URL Backend: localhost/blog_konecta/
     "action":"eliminarCategoria",
     "id":""
 
-/*--------------------- BLOGS -------------------------*/
+### /*--------------------- BLOGS -------------------------*/
 1) Listado de Blogs: 
   URL: localhost/blog_konecta/
   Parámetros: "action":"listarBlogs"
@@ -188,4 +194,4 @@ URL Backend: localhost/blog_konecta/
     "action":"verBlog",
     "id":""
 
-/*------------------------------------- FIN Documentación --------------------------------------*/
+### /*------------------------------------- FIN Documentación --------------------------------------*/
