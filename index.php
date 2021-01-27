@@ -484,6 +484,45 @@ if(isset($_REQUEST["action"])){
 
             break;
         
+        //Listado de blogs
+        case 'verBlog':
+            //Creo la variable blog
+            $oBlog = new Blog();
+            $oCategoria = new Categoria();
+
+            //Valido existencia de datos
+            $iId = isset($_POST['id']) ? $_POST['id'] : null;
+
+            //Cargo el blog
+            if($oBlog->getBlogById($iId)){
+                $oBlogCargado = new stdClass();
+                $oBlogCargado->titulo = $oBlog->getTitulo();
+                $oBlogCargado->slug = $oBlog->getSlug();
+                $oBlogCargado->textocorto = $oBlog->getTextoCorto();
+                $oBlogCargado->textolargo = $oBlog->getTextoLargo();
+                $oBlogCargado->rutaimagen = $oBlog->getRutaImagen();
+                $oBlogCargado->idcategorias = $oBlog->getIdsCategorias();
+                $oBlogCargado->fechacreacion = $oBlog->getFechaCreacion();
+                $oBlogCargado->fechaactualizacion = $oBlog->getFechaActualizacion();
+
+                $oRespuesta->exito = true;
+                $oRespuesta->mensaje = $oBlog->getMensaje();
+                $oRespuesta->blog = $oBlogCargado;
+                $oRespuesta->blogs = $oBlog->getAll();
+                $oRespuesta->categorias = $oCategoria->getAll();
+            } else {
+                $oRespuesta->exito = false;
+                $oRespuesta->mensaje = $oBlog->getMensaje();
+                $oRespuesta->blog = null;
+            }
+
+            //Devuelvo la respuesta
+            echo json_encode($oRespuesta);
+            header("HTTP/1.1 200 OK");
+            exit();
+
+            break;
+        
         //Login de usuarios
         case 'login':
             //Creo la variable usuario

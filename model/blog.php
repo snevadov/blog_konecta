@@ -598,6 +598,33 @@ class Blog {
 
         return true;
     }
+
+    /**
+     * Funcion para cargar blog de la base de datos
+     * @by: snevadov
+     * @date: 2021/01/27
+     * @return: array
+     */
+    public function getBlogById($iId){
+
+        //Seteo el id
+        $this->iId = $iId;
+        
+
+        //Valido que tenga id seteado
+        if(isset($this->iId)){
+
+            if($this->load()){
+                return true;
+            }
+
+        } else {
+
+            $this->sMensaje = 'No se envió el identificador del blog';
+
+            return false;
+        }
+    }
 }
 
 ?>
