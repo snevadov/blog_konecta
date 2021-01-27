@@ -331,61 +331,71 @@ class Blog {
      * @return: Boolean
      */
     public function save(){
-        
-        //Verifico la integridad        
-        if(!$this->verificarIntegridad()){
+
+        try {
+            //Verifico la integridad        
+            if(!$this->verificarIntegridad()){
+                return false;
+            }
+
+            //Si tiene el id seteado, es update
+            if(isset($this->iId)){
+                //Inserto en base de datos
+                $stmt = $this->dbConection->prepare('UPDATE blog
+                SET titulo=:titulo, slug=:slug, textocorto=:textocorto, textolargo=:textolargo, 
+                    rutaimagen=:rutaimagen, fechaactualizacion=:fechaactualizacion
+                WHERE id=:id');
+                $stmt->execute(
+                    array(
+                        ':titulo' => $this->sTitulo,
+                        ':slug' => $this->sSlug,
+                        ':textocorto' => $this->sTextoCorto,
+                        ':textolargo' => $this->sTextoLargo,
+                        ':rutaimagen' => $this->sRutaImagen,
+                        ':fechaactualizacion' => $this->dFechaActualizacion,
+                        ':id' => $this->iId
+                    )
+                );
+
+                $this->sMensaje = 'Blog actualizado satisfactoriamente.';
+
+                //Actualizo las categorías
+                $this->saveBlogXCategoria();
+
+                return true;
+            } else {
+                //Inserto en base de datos
+                $stmt = $this->dbConection->prepare('INSERT INTO blog
+                (titulo, slug, textocorto, textolargo, rutaimagen, fechacreacion) 
+                VALUES (:titulo, :slug, :textocorto, :textolargo, :rutaimagen, :fechacreacion)');
+                $stmt->execute(
+                    array(
+                        ':titulo' => $this->sTitulo,
+                        ':slug' => $this->sSlug,
+                        ':textocorto' => $this->sTextoCorto,
+                        ':textolargo' => $this->sTextoLargo,
+                        ':rutaimagen' => $this->sRutaImagen,
+                        ':fechacreacion' => $this->dFechaCreacion
+                    )
+                );
+
+                $this->iId = $this->dbConection->lastInsertId();
+
+                $this->sMensaje = 'Blog insertado satisfactoriamente.';
+
+                //Actualizo las categorías
+                if($this->saveBlogXCategoria()){
+                    $this->sMensaje .= ' Blog insertado satisfactoriamente.';
+                } else {
+                    return false;
+                }
+
+                return true;
+            }
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
             return false;
-        }
-
-        //Si tiene el id seteado, es update
-        if(isset($this->iId)){
-            //Inserto en base de datos
-            $stmt = $this->dbConection->prepare('UPDATE blog
-            SET titulo=:titulo, slug=:slug, textocorto=:textocorto, textolargo=:textolargo, 
-                rutaimagen=:rutaimagen, fechaactualizacion=:fechaactualizacion
-            WHERE id=:id');
-            $stmt->execute(
-                array(
-                    ':titulo' => $this->sTitulo,
-                    ':slug' => $this->sSlug,
-                    ':textocorto' => $this->sTextoCorto,
-                    ':textolargo' => $this->sTextoLargo,
-                    ':rutaimagen' => $this->sRutaImagen,
-                    ':fechaactualizacion' => $this->dFechaActualizacion,
-                    ':id' => $this->iId
-                )
-            );
-
-            $this->sMensaje = 'Blog actualizado satisfactoriamente.';
-
-            //Actualizo las categorías
-            $this->saveBlogXCategoria();
-
-            return true;
-        } else {
-            //Inserto en base de datos
-            $stmt = $this->dbConection->prepare('INSERT INTO blog
-            (titulo, slug, textocorto, textolargo, rutaimagen, fechacreacion) 
-            VALUES (:titulo, :slug, :textocorto, :textolargo, :rutaimagen, :fechacreacion)');
-            $stmt->execute(
-                array(
-                    ':titulo' => $this->sTitulo,
-                    ':slug' => $this->sSlug,
-                    ':textocorto' => $this->sTextoCorto,
-                    ':textolargo' => $this->sTextoLargo,
-                    ':rutaimagen' => $this->sRutaImagen,
-                    ':fechacreacion' => $this->dFechaCreacion
-                )
-            );
-
-            $this->iId = $this->dbConection->lastInsertId();
-
-            $this->sMensaje = 'Blog insertado satisfactoriamente.';
-
-            //Actualizo las categorías
-            $this->saveBlogXCategoria();
-
-            return true;
         }
     }
 
@@ -397,36 +407,42 @@ class Blog {
      */
     public function load(){
 
-        //Valido que tenga el id seteado
-        if(isset($this->iId)){
-            //Cargo de base de datos
-            $stmt = $this->dbConection->prepare('SELECT 
-            titulo, slug, textocorto, textolargo, rutaimagen, fechacreacion, fechaactualizacion FROM blog
-            WHERE id=:id');
-            $stmt->execute(
-                array(
-                    ':id' => $this->iId
-                )
-            );
+        try {
+            //Valido que tenga el id seteado
+            if(isset($this->iId)){
+                //Cargo de base de datos
+                $stmt = $this->dbConection->prepare('SELECT 
+                titulo, slug, textocorto, textolargo, rutaimagen, fechacreacion, fechaactualizacion FROM blog
+                WHERE id=:id');
+                $stmt->execute(
+                    array(
+                        ':id' => $this->iId
+                    )
+                );
 
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $this->sTitulo = $row['titulo'];
-            $this->sSlug = $row['slug'];
-            $this->sTextoCorto = $row['textocorto'];
-            $this->sTextoLargo = $row['textolargo'];
-            $this->sRutaImagen = $row['rutaimagen'];
-            $this->dFechaCreacion = $row['fechacreacion'];
-            $this->dFechaActualizacion = $row['fechaactualizacion'];
-            $this->aIdsCategorias = $this->getCategoriasxBlog();
+                $this->sTitulo = $row['titulo'];
+                $this->sSlug = $row['slug'];
+                $this->sTextoCorto = $row['textocorto'];
+                $this->sTextoLargo = $row['textolargo'];
+                $this->sRutaImagen = $row['rutaimagen'];
+                $this->dFechaCreacion = $row['fechacreacion'];
+                $this->dFechaActualizacion = $row['fechaactualizacion'];
+                $this->aIdsCategorias = $this->getCategoriasxBlog();
 
 
-            $this->sMensaje = 'Blog cargado satisfactoriamente';
+                $this->sMensaje = 'Blog cargado satisfactoriamente';
 
-            return true;
-        } else {
-            
-            $this->sMensaje = 'No se envió el identificador del blog';
+                return true;
+            } else {
+                
+                $this->sMensaje = 'No se envió el identificador del blog';
+
+                return false;
+            }
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
 
             return false;
         }
@@ -440,19 +456,25 @@ class Blog {
      */
     public function getAll(){
 
-        //Cargo de base de datos
-        $stmt = $this->dbConection->query('SELECT b.id, MAX(b.titulo) AS titulo, MAX(b.slug) AS slug, 
-            MAX(b.textocorto) AS textocorto, MAX(b.textolargo) AS textolargo, MAX(b.rutaimagen) AS rutaimagen, GROUP_CONCAT(c.nombre) AS categorias, GROUP_CONCAT(c.id) AS idcategorias,
-            MAX(b.fechacreacion) as fechacreacion, MAX(b.fechaactualizacion) AS fechaactualizacion
-        FROM blog AS b
-        LEFT JOIN categoriaxblog AS cxb ON (b.id = cxb.idblog)
-        LEFT JOIN categoria AS c ON (c.id = cxb.idcategoria)
-        GROUP BY b.id');
-        $aBlogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            //Cargo de base de datos
+            $stmt = $this->dbConection->query('SELECT b.id, MAX(b.titulo) AS titulo, MAX(b.slug) AS slug, 
+                        MAX(b.textocorto) AS textocorto, MAX(b.textolargo) AS textolargo, MAX(b.rutaimagen) AS rutaimagen, GROUP_CONCAT(c.nombre) AS categorias, GROUP_CONCAT(c.id) AS idcategorias,
+                        MAX(b.fechacreacion) as fechacreacion, MAX(b.fechaactualizacion) AS fechaactualizacion
+                    FROM blog AS b
+                    LEFT JOIN categoriaxblog AS cxb ON (b.id = cxb.idblog)
+                    LEFT JOIN categoria AS c ON (c.id = cxb.idcategoria)
+                    GROUP BY b.id');
+            $aBlogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $this->sMensaje = 'Todos los blogs cargados satisfactoriamente';
+            $this->sMensaje = 'Todos los blogs cargados satisfactoriamente';
 
-        return $aBlogs;
+            return $aBlogs;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return array();
+        }
     }
 
     /**
@@ -462,29 +484,35 @@ class Blog {
      * @return: Boolean
      */
     public function delete(){
-        
-        //Valido que tenga id seteado
-        if(isset($this->iId)){
 
-            //Elimino primero las categorías
-            if($this->deleteCategoriasxBlog()){
-                //Elimino en base de datos
-                $sql = "DELETE FROM blog WHERE id = :id";
-                $stmt = $this->dbConection->prepare($sql);
-                $stmt->execute(array(':id' => $_POST['id']));
+        try {
+            //Valido que tenga id seteado
+            if(isset($this->iId)){
 
-                $this->sMensaje = 'Blog eliminado satisfactoriamente';
+                //Elimino primero las categorías
+                if($this->deleteCategoriasxBlog()){
+                    //Elimino en base de datos
+                    $sql = "DELETE FROM blog WHERE id = :id";
+                    $stmt = $this->dbConection->prepare($sql);
+                    $stmt->execute(array(':id' => $_POST['id']));
 
-                return true;
+                    $this->sMensaje = 'Blog eliminado satisfactoriamente';
+
+                    return true;
+                } else {
+                    $this->sMensaje = 'Error eliminando cateogrías de un Blog';
+
+                    return false;
+                }
+
             } else {
-                $this->sMensaje = 'Error eliminando cateogrías de un Blog';
+
+                $this->sMensaje = 'No se envió el identificador del blog';
 
                 return false;
             }
-
-        } else {
-
-            $this->sMensaje = 'No se envió el identificador del blog';
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
 
             return false;
         }
@@ -497,57 +525,63 @@ class Blog {
      * @return: Boolean
      */
     public function saveBlogXCategoria(){
-        
-        //Defino variables para agregar nuevas categorías y eliminar las que se quitaron
-        $aIdsCategoriaEliminar = array();
-        $aIdsCategoriaNuevas = array();
-        $aIdsCategoriaAnteriores = $this->getCategoriasxBlog();
 
-        //Busco las categorías nuevas
-        foreach ($this->aIdsCategorias as $indice => $iIdCategoria) {
+        try {
+            //Defino variables para agregar nuevas categorías y eliminar las que se quitaron
+            $aIdsCategoriaEliminar = array();
+            $aIdsCategoriaNuevas = array();
+            $aIdsCategoriaAnteriores = $this->getCategoriasxBlog();
 
-            if(!in_array($iIdCategoria, $aIdsCategoriaAnteriores)){
-                $aIdsCategoriaNuevas[] = $iIdCategoria;
+            //Busco las categorías nuevas
+            foreach ($this->aIdsCategorias as $indice => $iIdCategoria) {
+
+                if(!in_array($iIdCategoria, $aIdsCategoriaAnteriores)){
+                    $aIdsCategoriaNuevas[] = $iIdCategoria;
+                }
             }
-        }
 
-        //Busco las categorías eliminadas
-        foreach ($aIdsCategoriaAnteriores as $indice => $iIdCategoriaAnterior) {
+            //Busco las categorías eliminadas
+            foreach ($aIdsCategoriaAnteriores as $indice => $iIdCategoriaAnterior) {
 
-            if(!in_array($iIdCategoriaAnterior, $this->aIdsCategorias)){
-                $aIdsCategoriaEliminar[] = $iIdCategoriaAnterior;
+                if(!in_array($iIdCategoriaAnterior, $this->aIdsCategorias)){
+                    $aIdsCategoriaEliminar[] = $iIdCategoriaAnterior;
+                }
             }
+
+            //Inserto en base de datos las categorías nuevas
+            foreach ($aIdsCategoriaNuevas as $iIdCategoriaNueva) {
+                $stmt = $this->dbConection->prepare('INSERT INTO categoriaxblog
+                (idblog, idcategoria) 
+                VALUES (:idblog, :idcategoria)');
+                $stmt->execute(
+                    array(
+                        ':idblog' => $this->iId,
+                        ':idcategoria' => $iIdCategoriaNueva
+                    )
+                );
+                
+                //$this->sMensaje .= ' Categoría '.$iIdCategoriaNueva.' asociada al blog satisfactoriamente.';
+            }
+
+            //Elimino en base de datos las categorías borradas
+            foreach ($aIdsCategoriaEliminar as $iIdCategoriaEliminar) {
+                $stmt = $this->dbConection->prepare('DELETE FROM categoriaxblog WHERE idblog=:idblog AND idcategoria=:idcategoria');
+                $stmt->execute(
+                    array(
+                        ':idblog' => $this->iId,
+                        ':idcategoria' => $iIdCategoriaEliminar
+                    )
+                );
+
+                //$this->sMensaje .= ' Categoría '.$iIdCategoriaEliminar.' desasociada al blog satisfactoriamente.';
+            }
+
+            return true;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return false;
         }
-
-        //Inserto en base de datos las categorías nuevas
-        foreach ($aIdsCategoriaNuevas as $iIdCategoriaNueva) {
-            $stmt = $this->dbConection->prepare('INSERT INTO categoriaxblog
-            (idblog, idcategoria) 
-            VALUES (:idblog, :idcategoria)');
-            $stmt->execute(
-                array(
-                    ':idblog' => $this->iId,
-                    ':idcategoria' => $iIdCategoriaNueva
-                )
-            );
-
-            $this->sMensaje .= ' Categoría '.$iIdCategoriaNueva.' asociada al blog satisfactoriamente.';
-        }
-
-        //Elimino en base de datos las categorías borradas
-        foreach ($aIdsCategoriaEliminar as $iIdCategoriaEliminar) {
-            $stmt = $this->dbConection->prepare('DELETE FROM categoriaxblog WHERE idblog=:idblog AND idcategoria=:idcategoria');
-            $stmt->execute(
-                array(
-                    ':idblog' => $this->iId,
-                    ':idcategoria' => $iIdCategoriaEliminar
-                )
-            );
-
-            $this->sMensaje .= ' Categoría '.$iIdCategoriaEliminar.' desasociada al blog satisfactoriamente.';
-        }
-
-        return true;
     }
 
     /**
@@ -557,23 +591,29 @@ class Blog {
      * @return: array
      */
     public function getCategoriasxBlog($iId = null){
-        
-        //Cargo de base de datos
-        $iId = isset($iId) ? $iId :  $this->iId;
-        
-        $stmt = $this->dbConection->prepare('SELECT idcategoria FROM categoriaxblog WHERE idblog=:id');
-        $stmt->execute(
-            array(
-                ':id' => $iId
-            )
-        );
-        
-        //Ejecuto la consulta
-        $aIdsCategorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        $this->sMensaje .= 'Todas las categorías por Blog cargadas satisfactoriamente';
+        try {
+            //Cargo de base de datos
+            $iId = isset($iId) ? $iId :  $this->iId;
+            
+            $stmt = $this->dbConection->prepare('SELECT idcategoria FROM categoriaxblog WHERE idblog=:id');
+            $stmt->execute(
+                array(
+                    ':id' => $iId
+                )
+            );
+            
+            //Ejecuto la consulta
+            $aIdsCategorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        return $aIdsCategorias;
+            //$this->sMensaje = 'Todas las categorías por Blog cargadas satisfactoriamente';
+
+            return $aIdsCategorias;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return array();
+        }
     }
 
     /**
@@ -583,20 +623,26 @@ class Blog {
      * @return: Boolean
      */
     public function deleteCategoriasxBlog($iId = null){
-        
-        //Cargo de base de datos
-        $iId = isset($iId) ? $iId :  $this->iId;
-        
-        $stmt = $this->dbConection->prepare('DELETE FROM categoriaxblog WHERE idblog=:id');
-        $stmt->execute(
-            array(
-                ':id' => $iId
-            )
-        );
 
-        $this->sMensaje .= 'Todas las categorías por Blog eliminadas satisfactoriamente';
+        try {
+            //Cargo de base de datos
+            $iId = isset($iId) ? $iId :  $this->iId;
+            
+            $stmt = $this->dbConection->prepare('DELETE FROM categoriaxblog WHERE idblog=:id');
+            $stmt->execute(
+                array(
+                    ':id' => $iId
+                )
+            );
 
-        return true;
+            $this->sMensaje .= 'Todas las categorías por Blog eliminadas satisfactoriamente';
+
+            return true;
+        } catch(Exception $e){
+            $this->sMensaje = $e->getMessage();
+
+            return false;
+        }
     }
 
     /**

@@ -70,7 +70,6 @@ if(isset($_REQUEST["action"])){
 
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
 
@@ -118,7 +117,6 @@ if(isset($_REQUEST["action"])){
 
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
             
@@ -130,7 +128,6 @@ if(isset($_REQUEST["action"])){
 
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
 
@@ -164,7 +161,6 @@ if(isset($_REQUEST["action"])){
 
                //Devuelvo la respuesta
                echo json_encode($oRespuesta);
-               header("HTTP/1.1 400 Bad Request");
                exit();
            }
 
@@ -222,7 +218,6 @@ if(isset($_REQUEST["action"])){
 
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
 
@@ -262,7 +257,6 @@ if(isset($_REQUEST["action"])){
  
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
             
@@ -274,7 +268,6 @@ if(isset($_REQUEST["action"])){
 
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
 
@@ -308,7 +301,6 @@ if(isset($_REQUEST["action"])){
  
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
  
@@ -354,7 +346,11 @@ if(isset($_REQUEST["action"])){
             $sTextoCorto = isset($_POST['textocorto']) ? $_POST['textocorto'] : null;
             $sTextoLargo = isset($_POST['textolargo']) ? $_POST['textolargo'] : null;
             $sRutaImagen = isset($_POST['rutaimagen']) ? $_POST['rutaimagen'] : null;
-            $aIdsCategorias = isset($_POST['idcategorias']) ? is_array($_POST['idcategorias']) ? $_POST['idcategorias'] : [$_POST['idcategorias']] : array();
+            if(!isset($_POST['idcategorias'])  || is_null($_POST['idcategorias']) || ($_POST['idcategorias'] == 0)){
+                $aIdsCategorias = array();
+            } elseif (!is_array($_POST['idcategorias'])) {
+                $aIdsCategorias = array($_POST['idcategorias']);
+            }
             $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
 
             //Seteo los datos en el modelo
@@ -372,14 +368,11 @@ if(isset($_REQUEST["action"])){
                 $oRespuesta->exito = false;
                 $oRespuesta->mensaje = $oBlog->getMensaje();
 
-                //Devuelvo la respuesta
-                echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
-                exit();
+            } else {
+                $oRespuesta->exito = true;
+                $oRespuesta->mensaje = $oBlog->getMensaje();
             }
 
-            $oRespuesta->exito = true;
-            $oRespuesta->mensaje = $oBlog->getMensaje();
             $oRespuesta->blogs = $oBlog->getAll();
 
              //Devuelvo la respuesta
@@ -402,7 +395,11 @@ if(isset($_REQUEST["action"])){
             $sTextoCorto = isset($_POST['textocorto']) ? $_POST['textocorto'] : null;
             $sTextoLargo = isset($_POST['textolargo']) ? $_POST['textolargo'] : null;
             $sRutaImagen = isset($_POST['rutaimagen']) ? $_POST['rutaimagen'] : null;
-            $aIdsCategorias = isset($_POST['idcategorias']) ? is_array($_POST['idcategorias']) ? $_POST['idcategorias'] : [$_POST['idcategorias']] : array();
+            if(!isset($_POST['idcategorias'])  || is_null($_POST['idcategorias']) || ($_POST['idcategorias'] == 0)){
+                $aIdsCategorias = array();
+            } elseif (!is_array($_POST['idcategorias'])) {
+                $aIdsCategorias = array($_POST['idcategorias']);
+            }
             $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
 
             //Seteo los datos en el modelo
@@ -422,7 +419,6 @@ if(isset($_REQUEST["action"])){
  
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
             
@@ -434,7 +430,6 @@ if(isset($_REQUEST["action"])){
 
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
 
@@ -468,7 +463,6 @@ if(isset($_REQUEST["action"])){
 
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
 
@@ -545,7 +539,6 @@ if(isset($_REQUEST["action"])){
 
                 //Devuelvo la respuesta
                 echo json_encode($oRespuesta);
-                header("HTTP/1.1 400 Bad Request");
                 exit();
             }
 
