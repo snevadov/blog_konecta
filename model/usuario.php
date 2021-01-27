@@ -452,7 +452,7 @@ class Usuario {
      */
     public function getAll(){
         //Cargo de base de datos
-        $stmt = $this->dbConection->query('SELECT u.id, u.identificacion, u.nombre, u.correo, u.idtipousuario, tu.nombre AS tipousuario,
+        $stmt = $this->dbConection->query('SELECT u.id, u.identificacion, u.nombre, u.correo, u.idtipousuario, u.numeromovil, tu.nombre AS tipousuario,
              u.fechacreacion, u.fechaactualizacion 
         FROM usuario AS u
         INNER JOIN tipousuario AS tu ON (u.idtipousuario = tu.id)');

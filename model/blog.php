@@ -442,7 +442,7 @@ class Blog {
 
         //Cargo de base de datos
         $stmt = $this->dbConection->query('SELECT b.id, MAX(b.titulo) AS titulo, MAX(b.slug) AS slug, 
-            MAX(b.textocorto) AS textocorto, MAX(b.textolargo) AS textolargo, MAX(b.rutaimagen) AS rutaimagen, GROUP_CONCAT(c.nombre) AS categorias,
+            MAX(b.textocorto) AS textocorto, MAX(b.textolargo) AS textolargo, MAX(b.rutaimagen) AS rutaimagen, GROUP_CONCAT(c.nombre) AS categorias, GROUP_CONCAT(c.id) AS idcategorias,
             MAX(b.fechacreacion) as fechacreacion, MAX(b.fechaactualizacion) AS fechaactualizacion
         FROM blog AS b
         LEFT JOIN categoriaxblog AS cxb ON (b.id = cxb.idblog)

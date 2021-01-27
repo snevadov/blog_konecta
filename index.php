@@ -74,6 +74,7 @@ if(isset($_REQUEST["action"])){
                 exit();
             }
 
+            $oRespuesta->usuarios = $oUsuario->getAll();
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oUsuario->getMensaje();
 
@@ -133,6 +134,7 @@ if(isset($_REQUEST["action"])){
                 exit();
             }
 
+            $oRespuesta->usuarios = $oUsuario->getAll();
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oUsuario->getMensaje();
 
@@ -168,6 +170,7 @@ if(isset($_REQUEST["action"])){
 
            $oRespuesta->exito = true;
            $oRespuesta->mensaje = $oUsuario->getMensaje();
+           $oRespuesta->usuarios = $oUsuario->getAll();
 
             //Devuelvo la respuesta
             echo json_encode($oRespuesta);
@@ -348,7 +351,7 @@ if(isset($_REQUEST["action"])){
             $sTextoCorto = isset($_POST['textocorto']) ? $_POST['textocorto'] : null;
             $sTextoLargo = isset($_POST['textolargo']) ? $_POST['textolargo'] : null;
             $sRutaImagen = isset($_POST['rutaimagen']) ? $_POST['rutaimagen'] : null;
-            $aIdsCategorias = isset($_POST['idcategorias']) ? $_POST['idcategorias'] : array();
+            $aIdsCategorias = isset($_POST['idcategorias']) ? is_array($_POST['idcategorias']) ? $_POST['idcategorias'] : [$_POST['idcategorias']] : array();
             $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
 
             //Seteo los datos en el modelo
@@ -374,6 +377,7 @@ if(isset($_REQUEST["action"])){
 
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oBlog->getMensaje();
+            $oRespuesta->blogs = $oBlog->getAll();
 
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);
@@ -395,7 +399,7 @@ if(isset($_REQUEST["action"])){
             $sTextoCorto = isset($_POST['textocorto']) ? $_POST['textocorto'] : null;
             $sTextoLargo = isset($_POST['textolargo']) ? $_POST['textolargo'] : null;
             $sRutaImagen = isset($_POST['rutaimagen']) ? $_POST['rutaimagen'] : null;
-            $aIdsCategorias = isset($_POST['idcategorias']) ? $_POST['idcategorias'] : array();
+            $aIdsCategorias = isset($_POST['idcategorias']) ? is_array($_POST['idcategorias']) ? $_POST['idcategorias'] : [$_POST['idcategorias']] : array();
             $dFechaCreacion = isset($_POST['fechacreacion']) ? $_POST['fechacreacion'] : date('Y-m-d H:i:s');
 
             //Seteo los datos en el modelo
@@ -433,6 +437,7 @@ if(isset($_REQUEST["action"])){
 
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oBlog->getMensaje();
+            $oRespuesta->blogs = $oBlog->getAll();
 
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);
@@ -466,6 +471,7 @@ if(isset($_REQUEST["action"])){
 
             $oRespuesta->exito = true;
             $oRespuesta->mensaje = $oBlog->getMensaje();
+            $oRespuesta->blogs = $oBlog->getAll();
 
              //Devuelvo la respuesta
              echo json_encode($oRespuesta);

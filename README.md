@@ -35,8 +35,8 @@ CREATE TABLE usuario (
   PRIMARY KEY(id)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO usuario (nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion) 
-  VALUES ('Administrador', 'administrador@blogkonecta.com', MD5('abc123'), '3007483357',1, NOW());
+INSERT INTO usuario (identificacion, nombre, correo, contrasena, numeromovil, idtipousuario, fechacreacion) 
+  VALUES ('1','Administrador', 'administrador@blogkonecta.com', MD5('abc123'), '3007483357',1, NOW());
 
 CREATE TABLE categoria (
   id INTEGER NOT NULL AUTO_INCREMENT,
