@@ -17,8 +17,8 @@ CREATE TABLE tipousuario (
   PRIMARY KEY(id)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO tipousuario (nombre) VALUES ('Administrador');
-INSERT INTO tipousuario (nombre) VALUES ('Usuario');
+INSERT INTO tipousuario (id, nombre) VALUES (1,'Administrador');
+INSERT INTO tipousuario (id, nombre) VALUES (2,'Usuario');
 
 CREATE TABLE usuario (
   id INTEGER NOT NULL AUTO_INCREMENT,
@@ -177,6 +177,12 @@ URL Backend: localhost/blog_konecta/
   URL: localhost/blog_konecta/
   Parámetros: 
     "action":"eliminarBlog",
+    "id":""
+
+5) Ver blog: 
+  URL: localhost/blog_konecta/
+  Parámetros: 
+    "action":"verBlog",
     "id":""
 
 /*------------------------------------- FIN Documentación --------------------------------------*/
